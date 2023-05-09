@@ -1,14 +1,55 @@
 # Project
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This project is a parse and DOM(Document object model) for the Api Manifest media type.  An early draft of the specification is [available](https://darrelmiller.github.io/api-manifest/draft-darrelmiller-apimanifest.html).
 
-As the maintainer of this project, please make a few updates:
+An "api manifest" is a way to capture the dependencies that an application has on HTTP APIs. It contains characteristics of those dependencies including links to API descriptions, specifics of the types of HTTP API requests made by the application and related authorization information.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+You can create an API manifest in code:
+
+```csharp
+ var apiManifest = new ApiManifestDocument();
+apiManifest.Publisher = new Publisher();
+apiManifest.Publisher.Name = "Microsoft";
+apiManifest.Publisher.ContactEmail = "example@example.org";
+apiManifest.ApiDependencies.Add(new ApiDependency()
+{
+    ApiDescripionUrl = "https://example.org",
+    Auth = new Auth()
+    {
+        ClientId = "1234",
+        Permissions = new() {
+            {"application", new() {"read"}},
+            {"delegated", new() {"read", "write"}}
+        }
+    },
+    Requests = new List<Request>() {
+        new() {
+            Method = "GET",
+            UriTemplate = "/api/v1/endpoint"
+        },
+        new () {
+            Method = "POST",
+            UriTemplate = "/api/v1/endpoint"
+        }
+    }
+});
+```
+
+or you can read it from a stream
+
+```csharp
+var doc = JsonDocument.Parse(stream);
+var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+```
+
+An ApiManifest object can be serialized to a JSON stream as follows:
+
+```csharp
+var stream = new MemoryStream();
+var writer = new Utf8JsonWriter(stream);
+exampleApiManifest.Write(writer);
+writer.Flush();
+```
 
 ## Contributing
 
