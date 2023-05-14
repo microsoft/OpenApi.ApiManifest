@@ -7,13 +7,16 @@ public class Publisher
     public string? Name { get; set; }
     public string? ContactEmail { get; set; }
 
+    private const string NameProperty = "name";
+    private const string ContactEmailProperty = "contactEmail";
+
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(Name)) writer.WriteString("name", Name);
-        if (!String.IsNullOrWhiteSpace(ContactEmail)) writer.WriteString("contactEmail", ContactEmail);
+        if (!String.IsNullOrWhiteSpace(Name)) writer.WriteString(NameProperty, Name);
+        if (!String.IsNullOrWhiteSpace(ContactEmail)) writer.WriteString(ContactEmailProperty, ContactEmail);
 
         writer.WriteEndObject();
     }
@@ -30,7 +33,7 @@ public class Publisher
 
     private static FixedFieldMap<Publisher> handlers = new()
     {
-        { "name", (o,v) => {o.Name = v.GetString(); } },
-        { "contactEmail", (o,v) => {o.ContactEmail = v.GetString();  } },
+        { NameProperty, (o,v) => {o.Name = v.GetString(); } },
+        { ContactEmailProperty, (o,v) => {o.ContactEmail = v.GetString();  } },
     };
 }

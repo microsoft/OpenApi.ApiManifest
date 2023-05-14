@@ -7,11 +7,14 @@ public class Auth
     public string? ClientId { get; set; }
     public Dictionary<string, List<string>>? Permissions { get; set; }
 
+    private const string ClientIdProperty = "clientId";
+    private const string PermissionsProperty = "permissions";
+
     // Fixed fieldmap for Auth
     private static FixedFieldMap<Auth> handlers = new()
     {
-        { "clientId", (o,v) => {o.ClientId = v.GetString();  } },
-        { "permissions", (o,v) => {o.Permissions = ParsingHelpers.GetMap(v, ParsingHelpers.GetListOfString);  } },
+        { ClientIdProperty, (o,v) => {o.ClientId = v.GetString();  } },
+        { PermissionsProperty, (o,v) => {o.Permissions = ParsingHelpers.GetMap(v, ParsingHelpers.GetListOfString);  } },
     };
 
     // Write Method
@@ -19,11 +22,11 @@ public class Auth
     {
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(ClientId)) writer.WriteString("clientId", ClientId);
+        if (!String.IsNullOrWhiteSpace(ClientId)) writer.WriteString(ClientIdProperty, ClientId);
 
         if (Permissions != null)
         {
-            writer.WritePropertyName("permissions");
+            writer.WritePropertyName(PermissionsProperty);
             writer.WriteStartObject();
             foreach (var permission in Permissions)
             {

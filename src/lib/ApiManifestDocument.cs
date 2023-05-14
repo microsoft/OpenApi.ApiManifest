@@ -7,15 +7,18 @@ public class ApiManifestDocument
     public Publisher? Publisher { get; set; }
     public List<ApiDependency> ApiDependencies { get; set; } = new List<ApiDependency>();
 
+    private const string PublisherProperty = "publisher";
+    private const string ApiDependenciesProperty = "apiDependencies";
+
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
 
-        if (Publisher != null) writer.WritePropertyName("publisher");
+        if (Publisher != null) writer.WritePropertyName(PublisherProperty);
         Publisher?.Write(writer);
 
-        if (ApiDependencies.Count > 0) writer.WritePropertyName("apiDependencies");
+        if (ApiDependencies.Count > 0) writer.WritePropertyName(ApiDependenciesProperty);
         writer.WriteStartArray();
         foreach (var apiDependency in ApiDependencies)
         {
@@ -35,7 +38,7 @@ public class ApiManifestDocument
     // Create fixed field map for ApiManifest
     private static FixedFieldMap<ApiManifestDocument> handlers = new()
     {
-        { "publisher", (o,v) => {o.Publisher = Publisher.Load(v);  } },
-        { "apiDependencies", (o,v) => {o.ApiDependencies = ParsingHelpers.GetList(v, ApiDependency.Load);  } },
+        { PublisherProperty, (o,v) => {o.Publisher = Publisher.Load(v);  } },
+        { ApiDependenciesProperty, (o,v) => {o.ApiDependencies = ParsingHelpers.GetList(v, ApiDependency.Load);  } },
     };
 }

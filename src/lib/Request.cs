@@ -6,24 +6,32 @@ public class Request
     public string? Method { get; set; }
     public string? UriTemplate { get; set; }
     public string? DataClassification { get; set; }
+    public bool Exclude { get; set; } = false;
+
+    private const string MethodProperty = "method";
+    private const string UriTemplateProperty = "uriTemplate";
+    private const string DataClassificationProperty = "dataClassification";
+    private const string ExcludeProperty = "exclude";
 
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(Method)) writer.WriteString("method", Method);
-        if (!String.IsNullOrWhiteSpace(UriTemplate)) writer.WriteString("uriTemplate", UriTemplate);
-        if (!String.IsNullOrWhiteSpace(DataClassification)) writer.WriteString("dataClassification", DataClassification);
+        if (!String.IsNullOrWhiteSpace(Method)) writer.WriteString(MethodProperty, Method);
+        if (!String.IsNullOrWhiteSpace(UriTemplate)) writer.WriteString(UriTemplateProperty, UriTemplate);
+        if (!String.IsNullOrWhiteSpace(DataClassification)) writer.WriteString(DataClassificationProperty, DataClassification);
+        if (Exclude) writer.WriteBoolean(ExcludeProperty, Exclude);
 
         writer.WriteEndObject();
     }
     // Fixed fieldmap for Request
     private static FixedFieldMap<Request> handlers = new()
     {
-        { "method", (o,v) => {o.Method = v.GetString();  } },
-        { "uriTemplate", (o,v) => {o.UriTemplate = v.GetString();  } },
-        { "dataClassification", (o,v) => {o.DataClassification = v.GetString();  } },
+        { MethodProperty, (o,v) => {o.Method = v.GetString();  } },
+        { UriTemplateProperty, (o,v) => {o.UriTemplate = v.GetString();  } },
+        { DataClassificationProperty, (o,v) => {o.DataClassification = v.GetString();  } },
+        { ExcludeProperty, (o,v) => {o.Exclude = v.GetBoolean();  } },
     };
 
     // Load Method
