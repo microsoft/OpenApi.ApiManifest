@@ -86,7 +86,7 @@ stages:
 
       # Run the Unit test
       - task: DotNetCoreCLI@2
-        displayName: 'Test Microsoft.Kiota.Http.HttpClientLibrary'
+        displayName: 'Test Microsoft.OpenApi.ApiManifest'
         inputs:
           command: test
           projects: '$(Build.SourcesDirectory)\apimanifest.sln'
