@@ -19,7 +19,7 @@ pool:
 variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  ProductBinPath: '$(Build.SourcesDirectory)\src\bin\$(BuildConfiguration)'
+  ProductBinPath: '$(Build.SourcesDirectory)\src\lib\bin\$(BuildConfiguration)'
 
 
 stages:
