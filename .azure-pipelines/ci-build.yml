@@ -59,24 +59,6 @@ stages:
           versionSpec: '>=5.2.0'
           checkLatest: true
 
-      - task: PowerShell@2
-        displayName: 'Enable signing'
-        inputs:
-          targetType: filePath
-          filePath: 'scripts\EnableSigning.ps1'
-          arguments: '-projectPath "$(Build.SourcesDirectory)/src/lib/apimanifest.csproj"'
-          pwsh: true
-        enabled: true
-
-      - task: PowerShell@2
-        displayName: 'Enable signing'
-        inputs:
-          targetType: filePath
-          filePath: 'scripts\EnableSigning.ps1'
-          arguments: '-projectPath "$(Build.SourcesDirectory)/src/tests/tests.csproj"'
-          pwsh: true
-        enabled: true
-
       # Build the Product project
       - task: DotNetCoreCLI@2
         displayName: 'Build APIManifest'
@@ -134,33 +116,6 @@ stages:
           BinSkim: true
           CredScan: true
           PoliCheck: true
-
-      - task: EsrpCodeSigning@2
-        displayName: 'ESRP DLL Strong Name'
-        inputs:
-          ConnectedServiceName: 'microsoftgraph ESRP CodeSign DLL and NuGet (AKV)'
-          FolderPath: $(ProductBinPath)
-          UseMinimatch: true
-          Pattern: '**\*Microsoft.OpenApi.ApiManifest.dll'
-          signConfigType: inlineSignParams
-          inlineOperation: |
-            [
-                {
-                    "keyCode": "CP-233863-SN",
-                    "operationSetCode": "StrongNameSign",
-                    "parameters": [],
-                    "toolName": "sign",
-                    "toolVersion": "1.0"
-                },
-                {
-                    "keyCode": "CP-233863-SN",
-                    "operationSetCode": "StrongNameVerify",
-                    "parameters": [],
-                    "toolName": "sign",
-                    "toolVersion": "1.0"
-                }
-            ]
-          SessionTimeout: 20
 
       - task: EsrpCodeSigning@2
         displayName: 'ESRP DLL CodeSigning'
