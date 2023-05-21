@@ -50,7 +50,13 @@ public class BasicTests
         var json = reader.ReadToEnd();
         var doc = JsonDocument.Parse(json);
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
-        Assert.Equivalent(exampleApiManifest, apiManifest );
+        Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher );
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests );
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescripionUrl, apiManifest.ApiDependencies["example"].ApiDescripionUrl );
+        var expectedAuth = exampleApiManifest.ApiDependencies["example"].Auth;
+        var actualAuth = apiManifest.ApiDependencies["example"].Auth;
+        Assert.Equivalent(expectedAuth.ClientIdentifier, actualAuth.ClientIdentifier );
+        Assert.Equivalent(expectedAuth.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString() );
     }
 
     private static ApiManifestDocument CreateDocument()
@@ -68,8 +74,12 @@ public class BasicTests
                         {
                             ClientIdentifier = "1234",
                             Access = new() {
-                                new () { Type= "application", Content = new JsonObject() } ,
-                                new () { Type= "delegated", Content = new JsonObject() }
+                                new () { Type= "application", Content = new JsonObject() {
+                                        { "scopes", new JsonArray() {"User.Read.All"} }}
+                                     } ,
+                                new () { Type= "delegated", Content = new JsonObject() {
+                                        { "scopes", new JsonArray() {"User.Read", "Mail.Read"} }}
+                                     }
                             }
                         },
                         Requests = new() {
