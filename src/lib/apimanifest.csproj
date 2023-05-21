@@ -14,6 +14,10 @@
     <PackageOutputPath>./../../artifacts</PackageOutputPath>    
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <SignAssembly>True</SignAssembly>
+    <Title>API Manifest</Title>
+    <AssemblyName>Microsoft.OpenApi.ApiManifest</AssemblyName>
+    <RootNamespace>Microsoft.OpenApi.ApiManifest</RootNamespace>
   </PropertyGroup>
 
 </Project>
