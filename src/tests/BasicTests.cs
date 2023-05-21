@@ -1,27 +1,21 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
-namespace tests;
+namespace Tests.ApiManifest;
 
-public class UnitTest1
+public class BasicTests
 {
     ApiManifestDocument exampleApiManifest;
-    public UnitTest1()
+    public BasicTests()
     {
         exampleApiManifest = CreateDocument();
-    }
-
-    [Fact]
-    public void Test1()
-    {
-
     }
 
     // Create test to instantiate a simple ApiManifestDocument
     [Fact]
     public void InitializeDocument()
     {
-
         Assert.NotNull(exampleApiManifest);
     }
 
@@ -61,34 +55,31 @@ public class UnitTest1
 
     private static ApiManifestDocument CreateDocument()
     {
-        var apiManifest = new ApiManifestDocument();
-        apiManifest.Publisher = new Publisher();
-        apiManifest.Publisher.Name = "Microsoft";
-        apiManifest.Publisher.ContactEmail = "example@example.org";
-        apiManifest.ApiDependencies.Add(new ApiDependency()
-        {
-            ApiDescripionUrl = "https://example.org",
-            Auth = new Auth()
-            {
-                ClientId = "1234",
-                Permissions = new() {
-                    {"application", new() {"read"}},
-                    {"delegated", new() {"read", "write"}}
-                }
+        return new ApiManifestDocument() {
+            Publisher = new() {
+                Name = "Microsoft",
+                ContactEmail = "example@example.org"
             },
-            Requests = new List<Request>() {
-                new() {
-                    Method = "GET",
-                    UriTemplate = "/api/v1/endpoint"
-                },
-                new () {
-                    Method = "POST",
-                    UriTemplate = "/api/v1/endpoint"
+            ApiDependencies = new() {
+                { "example", new()
+                    {
+                        ApiDescripionUrl = "https://example.org",
+                        Auth = new()
+                        {
+                            ClientIdentifier = "1234",
+                            Access = new() {
+                                new () { Type= "application", Content = new JsonObject() } ,
+                                new () { Type= "delegated", Content = new JsonObject() }
+                            }
+                        },
+                        Requests = new() {
+                            new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
+                            new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
+                        }
+                    }
                 }
             }
-        });
-        return apiManifest;
+        };
     }
-
 
 }

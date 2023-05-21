@@ -5,7 +5,7 @@ namespace Microsoft.OpenApi.ApiManifest;
 public class ApiManifestDocument
 {
     public Publisher? Publisher { get; set; }
-    public List<ApiDependency> ApiDependencies { get; set; } = new List<ApiDependency>();
+    public ApiDependencies ApiDependencies { get; set; } = new ApiDependencies();
 
     private const string PublisherProperty = "publisher";
     private const string ApiDependenciesProperty = "apiDependencies";
@@ -19,12 +19,13 @@ public class ApiManifestDocument
         Publisher?.Write(writer);
 
         if (ApiDependencies.Count > 0) writer.WritePropertyName(ApiDependenciesProperty);
-        writer.WriteStartArray();
+        writer.WriteStartObject();
         foreach (var apiDependency in ApiDependencies)
         {
-            apiDependency.Write(writer);
+            writer.WritePropertyName(apiDependency.Key);
+            apiDependency.Value.Write(writer);
         }
-        writer.WriteEndArray();
+        writer.WriteEndObject();
 
         writer.WriteEndObject();
     }
@@ -39,6 +40,12 @@ public class ApiManifestDocument
     private static FixedFieldMap<ApiManifestDocument> handlers = new()
     {
         { PublisherProperty, (o,v) => {o.Publisher = Publisher.Load(v);  } },
-        { ApiDependenciesProperty, (o,v) => {o.ApiDependencies = ParsingHelpers.GetList(v, ApiDependency.Load);  } },
+        { ApiDependenciesProperty, (o,v) => {o.ApiDependencies = new ApiDependencies(ParsingHelpers.GetMap(v, ApiDependency.Load));  } },
     };
+}
+
+public class ApiDependencies : Dictionary<string, ApiDependency>
+{
+    public ApiDependencies(IDictionary<string, ApiDependency> dictionary) : base(dictionary, StringComparer.OrdinalIgnoreCase) { }
+    public ApiDependencies() : base(StringComparer.OrdinalIgnoreCase) { }
 }

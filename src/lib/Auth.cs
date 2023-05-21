@@ -4,43 +4,58 @@ namespace Microsoft.OpenApi.ApiManifest;
 
 public class Auth
 {
-    public string? ClientId { get; set; }
-    public Dictionary<string, List<string>>? Permissions { get; set; }
+    public string? ClientIdentifier { get; set; }
+    public List<string>? AccessReference { get; set; }
+    public List<AccessRequest>? Access { get; set; }
 
-    private const string ClientIdProperty = "clientId";
-    private const string PermissionsProperty = "permissions";
+    private const string ClientIdentifierProperty = "clientIdentifier";
+    private const string AccessProperty = "access";
 
     // Fixed fieldmap for Auth
     private static FixedFieldMap<Auth> handlers = new()
     {
-        { ClientIdProperty, (o,v) => {o.ClientId = v.GetString();  } },
-        { PermissionsProperty, (o,v) => {o.Permissions = ParsingHelpers.GetMap(v, ParsingHelpers.GetListOfString);  } },
+        { ClientIdentifierProperty, (o,v) => { o.ClientIdentifier = v.GetString();  } },
+        { AccessProperty, (o,v) => { LoadAccessProperty(o, v); }}
     };
+
+    private static void LoadAccessProperty(Auth o, JsonElement v)
+    {
+        var content = v.EnumerateArray().FirstOrDefault();
+        if (content.ValueKind == JsonValueKind.String)
+        {
+            o.AccessReference = ParsingHelpers.GetListOfString(v);
+        }
+        else if (content.ValueKind == JsonValueKind.Object)
+        {
+            o.Access = ParsingHelpers.GetList<AccessRequest>(v, AccessRequest.Load);
+        }
+    }
 
     // Write Method
     public void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(ClientId)) writer.WriteString(ClientIdProperty, ClientId);
+        if (!String.IsNullOrWhiteSpace(ClientIdentifier)) writer.WriteString(ClientIdentifierProperty, ClientIdentifier);
 
-        if (Permissions != null)
+        if (Access != null)
         {
-            writer.WritePropertyName(PermissionsProperty);
-            writer.WriteStartObject();
-            foreach (var permission in Permissions)
+            writer.WritePropertyName(AccessProperty);
+            writer.WriteStartArray();
+            if (AccessReference != null)
             {
-                writer.WritePropertyName(permission.Key);
-                writer.WriteStartArray();
-                foreach (var value in permission.Value)
+                foreach (var accessReference in AccessReference)
                 {
-                    writer.WriteStringValue(value);
+                    writer.WriteStringValue(accessReference);
                 }
-                writer.WriteEndArray();
+            } else if (Access != null) {
+                foreach (var accessRequest in Access)
+                {
+                    accessRequest.Write(writer);
+                }
             }
-            writer.WriteEndObject();
+            writer.WriteEndArray();
         }
-
         writer.WriteEndObject();
     }
     // Load Method

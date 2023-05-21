@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Microsoft.OpenApi;
+namespace Microsoft.OpenApi.ApiManifest;
 
 internal class ParsingHelpers
 {
