@@ -6,9 +6,11 @@ public class ApiManifestDocument
 {
     public Publisher? Publisher { get; set; }
     public ApiDependencies ApiDependencies { get; set; } = new ApiDependencies();
+    public Extensions Extensions { get; set; } = new Extensions();
 
     private const string PublisherProperty = "publisher";
     private const string ApiDependenciesProperty = "apiDependencies";
+    private const string ExtensionsProperty = "extensions";
 
     // Write method
     public void Write(Utf8JsonWriter writer)
@@ -27,6 +29,11 @@ public class ApiManifestDocument
         }
         writer.WriteEndObject();
 
+        if (Extensions.Count > 0) {
+            writer.WritePropertyName(ExtensionsProperty);
+            Extensions.Write(writer);
+        }
+
         writer.WriteEndObject();
     }
     // Load method
@@ -41,6 +48,7 @@ public class ApiManifestDocument
     {
         { PublisherProperty, (o,v) => {o.Publisher = Publisher.Load(v);  } },
         { ApiDependenciesProperty, (o,v) => {o.ApiDependencies = new ApiDependencies(ParsingHelpers.GetMap(v, ApiDependency.Load));  } },
+        { ExtensionsProperty, (o,v) => {o.Extensions = Extensions.Load(v);  } }
     };
 }
 
