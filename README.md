@@ -7,32 +7,35 @@ An "api manifest" is a way to store the dependencies that an application has on 
 You can create an API manifest in code:
 
 ```csharp
- var apiManifest = new ApiManifestDocument();
-apiManifest.Publisher = new Publisher();
-apiManifest.Publisher.Name = "Microsoft";
-apiManifest.Publisher.ContactEmail = "example@example.org";
-apiManifest.ApiDependencies.Add(new ApiDependency()
-{
-    ApiDescripionUrl = "https://example.org",
-    Auth = new Auth()
-    {
-        ClientId = "1234",
-        Permissions = new() {
-            {"application", new() {"read"}},
-            {"delegated", new() {"read", "write"}}
-        }
-    },
-    Requests = new List<Request>() {
-        new() {
-            Method = "GET",
-            UriTemplate = "/api/v1/endpoint"
-        },
-        new () {
-            Method = "POST",
-            UriTemplate = "/api/v1/endpoint"
-        }
-    }
-});
+ var apiManifest = new ApiManifestDocument() {
+            Publisher = new() {
+                Name = "Microsoft",
+                ContactEmail = "example@example.org"
+            },
+            ApiDependencies = new() {
+                { "example", new()
+                    {
+                        ApiDescripionUrl = "https://example.org",
+                        Auth = new()
+                        {
+                            ClientIdentifier = "1234",
+                            Access = new() {
+                                new () { Type= "application", Content = new JsonObject() {
+                                        { "scopes", new JsonArray() {"User.Read.All"} }}
+                                     } ,
+                                new () { Type= "delegated", Content = new JsonObject() {
+                                        { "scopes", new JsonArray() {"User.Read", "Mail.Read"} }}
+                                     }
+                            }
+                        },
+                        Requests = new() {
+                            new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
+                            new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
+                        }
+                    }
+                }
+            }
+        };
 ```
 
 or you can read it from a stream
