@@ -258,7 +258,7 @@ stages:
                 command: push
                 packagesToPush: '$(Pipeline.Workspace)/Nugets/Microsoft.OpenApi.ApiManifest.*.nupkg'
                 nuGetFeedType: external
-                publishFeedCredentials: 'Kiota Nuget Connection'
+                publishFeedCredentials: 'OpenAPI Nuget Connection'
             - task: GitHubRelease@1
               displayName: 'GitHub release (create)'
               inputs:
