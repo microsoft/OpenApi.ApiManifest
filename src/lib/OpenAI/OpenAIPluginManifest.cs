@@ -16,6 +16,10 @@ public class OpenAIPluginManifest
     public string? ContactEmail { get; set; }
     public string? LegalInfoUrl { get; set; }
 
+    public OpenAIPluginManifest()
+    {
+        SchemaVersion = "v1";
+    }
 
     public static OpenAIPluginManifest Load(JsonElement value)
     {
