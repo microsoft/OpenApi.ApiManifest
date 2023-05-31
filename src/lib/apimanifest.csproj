@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>Microsoft.OpenApi.ApiManifest</PackageId>
-    <Version>0.5.0-preview</Version>
+    <VersionPrefix>0.5.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
     <PackageIconUrl>http://go.microsoft.com/fwlink/?LinkID=288890</PackageIconUrl>
     <PackageProjectUrl>https://github.com/Microsoft/OpenApi.ApiManifest</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

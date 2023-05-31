@@ -28,10 +28,10 @@ Param(
 
 [xml]$xmlDoc = Get-Content $projectPath
 
-# Assumption: VersionPrefix is set in the first property group.
-$versionPrefixString = $xmlDoc.Project.PropertyGroup[0].VersionPrefix
-if($xmlDoc.Project.PropertyGroup[0].VersionSuffix){
-    $versionPrefixString = $versionPrefixString + "-"  + $xmlDoc.Project.PropertyGroup[0].VersionSuffix
+# Assumption: There is only one PropertyGroup
+$versionPrefixString = $xmlDoc.Project.PropertyGroup.VersionPrefix
+if($xmlDoc.Project.PropertyGroup.VersionSuffix){
+    $versionPrefixString = $versionPrefixString + "-"  + $xmlDoc.Project.PropertyGroup.VersionSuffix
 }
 
 
