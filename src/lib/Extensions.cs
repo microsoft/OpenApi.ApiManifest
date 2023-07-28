@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
-public class Extensions : Dictionary<string, JsonNode>
+public class Extensions : Dictionary<string, JsonNode?>
 {
     public static Extensions Load(JsonElement value)
     {
@@ -11,7 +11,8 @@ public class Extensions : Dictionary<string, JsonNode>
         foreach(var property in value.EnumerateObject())
         {
             if (property.Value.ValueKind != JsonValueKind.Null) {
-                extensions.Add(property.Name, JsonSerializer.Deserialize<JsonObject>(property.Value.GetRawText()));
+                var extensionValue = JsonSerializer.Deserialize<JsonObject>(property.Value.GetRawText());
+                extensions.Add(property.Name, extensionValue);
             } 
         }
         return extensions;

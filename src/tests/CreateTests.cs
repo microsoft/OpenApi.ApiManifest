@@ -12,9 +12,8 @@ public class CreateTests {
 
     [Fact]
     public void CreatePublisher() {
-        var publisher = new Publisher() {
-            Name = "Contoso",
-            ContactEmail = "foo@bar.com"
+        var publisher = new Publisher(contactEmail: "foo@bar.com") {
+            Name = "Contoso"
         };
         Assert.Equal("Contoso", publisher.Name);
         Assert.Equal("foo@bar.com", publisher.ContactEmail);
@@ -26,10 +25,9 @@ public class CreateTests {
     public void CreateApiManifestWithAuth() {
         var apiManifest = new ApiManifestDocument()
         {
-            Publisher = new()
+            Publisher = new(contactEmail: "foo@bar.com")
             {
-                Name = "Contoso",
-                ContactEmail = "foo@bar.com"
+                Name = "Contoso"
             },
             ApiDependencies = new() {
                 { "Contoso.Api", new() {
@@ -48,8 +46,8 @@ public class CreateTests {
             }
         };
         Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].Auth);
-        Assert.Equal("2143234-234324-234234234-234", apiManifest.ApiDependencies["Contoso.Api"].Auth.ClientIdentifier);
-        Assert.Equal("oauth2", apiManifest.ApiDependencies["Contoso.Api"].Auth.Access[0].Type);
+        Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.Auth?.ClientIdentifier);
+        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.Auth?.Access[0].Type);
     }
 
 }

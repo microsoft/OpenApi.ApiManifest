@@ -55,16 +55,40 @@ public class BasicTests
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescripionUrl, apiManifest.ApiDependencies["example"].ApiDescripionUrl );
         var expectedAuth = exampleApiManifest.ApiDependencies["example"].Auth;
         var actualAuth = apiManifest.ApiDependencies["example"].Auth;
-        Assert.Equivalent(expectedAuth.ClientIdentifier, actualAuth.ClientIdentifier );
-        Assert.Equivalent(expectedAuth.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString() );
+        Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier );
+        Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString() );
+    }
+
+
+    // Create an empty document
+    [Fact]
+    public void CreateEmptyDocument()
+    {
+        var doc = new ApiManifestDocument();
+        Assert.NotNull(doc);
+        Assert.NotNull(doc.ApiDependencies);
+        Assert.Empty(doc.ApiDependencies);
+    }
+
+    // Create a document with a publisher that is missing contactEmail
+    [Fact]
+    public void CreateDocumentWithMissingContactEmail()
+    {
+        Assert.Throws<ArgumentNullException>(()=> {
+            var doc = new ApiManifestDocument() {
+                Publisher = new("") {
+                    Name = "Microsoft"
+                }
+            };
+        }  
+        );
     }
 
     private static ApiManifestDocument CreateDocument()
     {
         return new ApiManifestDocument() {
-            Publisher = new() {
-                Name = "Microsoft",
-                ContactEmail = "example@example.org"
+            Publisher = new("example@example.org") {
+                Name = "Microsoft"
             },
             ApiDependencies = new() {
                 { "example", new()

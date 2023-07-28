@@ -12,6 +12,13 @@ public class ApiManifestDocument
     private const string ApiDependenciesProperty = "apiDependencies";
     private const string ExtensionsProperty = "extensions";
 
+    public ApiManifestDocument()
+    {
+        if (Publisher != null) {
+            if (string.IsNullOrEmpty(Publisher.ContactEmail)) throw new ArgumentNullException(nameof(Publisher.ContactEmail));
+        }
+    }
+
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
