@@ -112,6 +112,19 @@ public class BasicTests
         // Then
         Assert.Equal("v1.0", apiManifest.ApiDependencies["graph"].ApiDescriptionVersion);
     }
+    [Fact]
+    public void ParsesApiDeploymentBaseUrl()
+    {
+        // Given
+        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var doc = JsonDocument.Parse(serializedValue);
+
+        // When
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+
+        // Then
+        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+    }
 
     private static ApiManifestDocument CreateDocument()
     {
