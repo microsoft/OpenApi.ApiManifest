@@ -1,6 +1,6 @@
 # API Manifest
 
-This project is a parser and DOM(Document object model) for the API Manifest media type.  An early draft of the specification is [available](https://darrelmiller.github.io/api-manifest/draft-miller-api-manifest.html).
+This project is a parser and DOM(Document object model) for the API Manifest media type.  A  draft of the specification is [available](https://www.ietf.org/archive/id/draft-miller-api-manifest-01.html).
 
 An "api manifest" is a way to store the dependencies that an application has on HTTP APIs. It contains characteristics of those dependencies including links to API descriptions, specifics of the types of HTTP API requests made by the application and related authorization information.
 
@@ -8,9 +8,8 @@ You can create an API manifest in code:
 
 ```csharp
  var apiManifest = new ApiManifestDocument() {
-            Publisher = new() {
-                Name = "Microsoft",
-                ContactEmail = "example@example.org"
+            Publisher = new(contactEmail: "example@example.org") {
+                Name = "Microsoft"
             },
             ApiDependencies = new() {
                 { "example", new()
