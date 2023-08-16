@@ -8,12 +8,13 @@ public class Extensions : Dictionary<string, JsonNode?>
     public static Extensions Load(JsonElement value)
     {
         var extensions = new Extensions();
-        foreach(var property in value.EnumerateObject())
+        foreach (var property in value.EnumerateObject())
         {
-            if (property.Value.ValueKind != JsonValueKind.Null) {
+            if (property.Value.ValueKind != JsonValueKind.Null)
+            {
                 var extensionValue = JsonSerializer.Deserialize<JsonObject>(property.Value.GetRawText());
                 extensions.Add(property.Name, extensionValue);
-            } 
+            }
         }
         return extensions;
     }
@@ -21,11 +22,12 @@ public class Extensions : Dictionary<string, JsonNode?>
     public void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
-        foreach(var extension in this)
+        foreach (var extension in this)
         {
             writer.WritePropertyName(extension.Key);
-            writer.WriteRawValue(extension.Value.ToJsonString());
+            if (extension.Value is not null)
+                writer.WriteRawValue(extension.Value.ToJsonString());
         }
         writer.WriteEndObject();
-    }    
+    }
 }

@@ -32,7 +32,7 @@ public class BasicTests
         var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
         Debug.WriteLine(json);
-        var doc = JsonDocument.Parse(json);       
+        var doc = JsonDocument.Parse(json);
         Assert.NotNull(doc);
     }
 
@@ -50,13 +50,13 @@ public class BasicTests
         var json = reader.ReadToEnd();
         var doc = JsonDocument.Parse(json);
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
-        Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher );
-        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests );
-        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescripionUrl, apiManifest.ApiDependencies["example"].ApiDescripionUrl );
+        Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher);
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests);
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescriptionUrl, apiManifest.ApiDependencies["example"].ApiDescriptionUrl);
         var expectedAuth = exampleApiManifest.ApiDependencies["example"].Auth;
         var actualAuth = apiManifest.ApiDependencies["example"].Auth;
-        Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier );
-        Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString() );
+        Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
+        Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString());
     }
 
 
@@ -74,26 +74,57 @@ public class BasicTests
     [Fact]
     public void CreateDocumentWithMissingContactEmail()
     {
-        Assert.Throws<ArgumentNullException>(()=> {
-            var doc = new ApiManifestDocument() {
-                Publisher = new("") {
+        Assert.Throws<ArgumentNullException>(() =>
+        {
+            var doc = new ApiManifestDocument()
+            {
+                Publisher = new("")
+                {
                     Name = "Microsoft"
                 }
             };
-        }  
+        }
         );
+    }
+    [Fact]
+    public void ParsesApiDescriptionUrlField()
+    {
+        // Given
+        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
+        var doc = JsonDocument.Parse(serializedValue);
+
+        // When
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+
+        // Then
+        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDescriptionUrl);
+    }
+    [Fact]
+    public void ParseApiDescriptionVersionField()
+    {
+        // Given
+        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionVersion\":\"v1.0\"}}}";
+        var doc = JsonDocument.Parse(serializedValue);
+
+        // When
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+
+        // Then
+        Assert.Equal("v1.0", apiManifest.ApiDependencies["graph"].ApiDescriptionVersion);
     }
 
     private static ApiManifestDocument CreateDocument()
     {
-        return new ApiManifestDocument() {
-            Publisher = new("example@example.org") {
+        return new ApiManifestDocument()
+        {
+            Publisher = new("example@example.org")
+            {
                 Name = "Microsoft"
             },
             ApiDependencies = new() {
                 { "example", new()
                     {
-                        ApiDescripionUrl = "https://example.org",
+                        ApiDescriptionUrl = "https://example.org",
                         Auth = new()
                         {
                             ClientIdentifier = "1234",
