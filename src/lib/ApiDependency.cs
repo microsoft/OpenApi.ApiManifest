@@ -12,7 +12,7 @@ public class ApiDependency
 
     private const string ApiDescriptionUrlProperty = "apiDescriptionUrl";
     private const string ApiDescriptionVersionProperty = "apiDescriptionVersion";
-    private const string apiDeploymentBaseUrlProperty = "apiDeploymentBaseUrl";
+    private const string ApiDeploymentBaseUrlProperty = "apiDeploymentBaseUrl";
     private const string AuthProperty = "auth";
     private const string RequestsProperty = "requests";
     private const string ExtensionsProperty = "extensions";
@@ -24,7 +24,7 @@ public class ApiDependency
 
         if (!string.IsNullOrWhiteSpace(ApiDescriptionUrl)) writer.WriteString(ApiDescriptionUrlProperty, ApiDescriptionUrl);
         if (!string.IsNullOrWhiteSpace(ApiDescriptionVersion)) writer.WriteString(ApiDescriptionVersionProperty, ApiDescriptionVersion);
-        if (!string.IsNullOrWhiteSpace(ApiDeploymentBaseUrl)) writer.WriteString(apiDeploymentBaseUrlProperty, ApiDeploymentBaseUrl);
+        if (!string.IsNullOrWhiteSpace(ApiDeploymentBaseUrl)) writer.WriteString(ApiDeploymentBaseUrlProperty, ApiDeploymentBaseUrl);
 
         if (Auth != null)
         {
@@ -56,7 +56,7 @@ public class ApiDependency
     {
         { ApiDescriptionUrlProperty, (o,v) => {o.ApiDescriptionUrl = v.GetString();  } },
         { ApiDescriptionVersionProperty, (o,v) => {o.ApiDescriptionVersion = v.GetString();  } },
-        { apiDeploymentBaseUrlProperty, (o,v) => {o.ApiDeploymentBaseUrl = v.GetString();  } },
+        { ApiDeploymentBaseUrlProperty, (o,v) => {o.ApiDeploymentBaseUrl = v.GetString();  } },
         { AuthProperty, (o,v) => {o.Auth = Auth.Load(v);  } },
         { RequestsProperty, (o,v) => {o.Requests = ParsingHelpers.GetList(v, Request.Load);  } },
         { ExtensionsProperty, (o,v) => {o.Extensions = Extensions.Load(v);  } }
