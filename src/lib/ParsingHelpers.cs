@@ -8,7 +8,11 @@ internal class ParsingHelpers
     {
         foreach (var element in node.EnumerateObject())
         {
-            handlers[element.Name](permissionsDocument, element.Value);
+            if (handlers.TryGetValue(element.Name, out var handler))
+            {
+                handler(permissionsDocument, element.Value);
+            }
+            //TODO we should log the unknown property or use an additional properties model
         };
     }
 
@@ -48,7 +52,7 @@ internal class ParsingHelpers
         foreach (var item in v.EnumerateArray())
         {
             var value = item.GetString();
-            if (value != null) 
+            if (value != null)
                 list.Add(value);
         }
         return list;
@@ -121,5 +125,8 @@ internal class ParsingHelpers
 
 public class FixedFieldMap<T> : Dictionary<string, Action<T, JsonElement>>
 {
+    public FixedFieldMap() : base(StringComparer.OrdinalIgnoreCase)
+    {
 
+    }
 }
