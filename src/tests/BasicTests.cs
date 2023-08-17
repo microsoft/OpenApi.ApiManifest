@@ -126,6 +126,34 @@ public class BasicTests
         Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
+    [Fact]
+    public void ParsesApiDeploymentBaseUrlWithDifferentCasing()
+    {
+        // Given
+        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var doc = JsonDocument.Parse(serializedValue);
+
+        // When
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+
+        // Then
+        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+    }
+
+    [Fact]
+    public void DoesNotFailOnExtraneousProperty()
+    {
+        // Given
+        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\", \"APISensitivity\":\"low\"}}}";
+        var doc = JsonDocument.Parse(serializedValue);
+
+        // When
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+
+        // Then
+        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+    }
+
     private static ApiManifestDocument CreateDocument()
     {
         return new ApiManifestDocument()
