@@ -3,20 +3,21 @@ using System.Text.Json.Nodes;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
-public class AccessRequest {
+public class AccessRequest
+{
 
     private const string TypeProperty = "type";
     private const string ContentProperty = "content";
 
-    public string? Type {get;set;}
-    public JsonObject? Content {get;set;}
+    public string? Type { get; set; }
+    public JsonObject? Content { get; set; }
 
     internal static AccessRequest Load(JsonElement content)
     {
         var accessRequest = new AccessRequest();
         ParsingHelpers.ParseMap(content, accessRequest, handlers);
         return accessRequest;
-        
+
     }
     public void Write(Utf8JsonWriter writer)
     {
@@ -30,7 +31,7 @@ public class AccessRequest {
         writer.WriteEndObject();
     }
 
-      private static FixedFieldMap<AccessRequest> handlers = new()
+    private static readonly FixedFieldMap<AccessRequest> handlers = new()
     {
         { TypeProperty, (o,v) => {o.Type = v.GetString(); } },
         { ContentProperty, (o,v) => {o.Content = JsonSerializer.Deserialize<JsonObject>(v);  } },

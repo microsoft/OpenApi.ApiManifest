@@ -3,14 +3,16 @@ using System.Text.Json;
 namespace Microsoft.OpenApi.ApiManifest;
 public class ApiDependency
 {
-    public string? ApiDescripionUrl { get; set; }
-    public string? ApiDescripionVersion { get; set; }
+    public string? ApiDescriptionUrl { get; set; }
+    public string? ApiDescriptionVersion { get; set; }
+    public string? ApiDeploymentBaseUrl { get; set; }
     public Auth? Auth { get; set; }
     public List<Request> Requests { get; set; } = new List<Request>();
     public Extensions? Extensions { get; set; }
 
-    private const string ApiDescriptionUrlProperty = "apiDescripionUrl";
-    private const string ApiDescriptionVersionProperty = "apiDescripionVersion";
+    private const string ApiDescriptionUrlProperty = "apiDescriptionUrl";
+    private const string ApiDescriptionVersionProperty = "apiDescriptionVersion";
+    private const string ApiDeploymentBaseUrlProperty = "apiDeploymentBaseUrl";
     private const string AuthProperty = "auth";
     private const string RequestsProperty = "requests";
     private const string ExtensionsProperty = "extensions";
@@ -20,15 +22,18 @@ public class ApiDependency
     {
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(ApiDescripionUrl)) writer.WriteString(ApiDescriptionUrlProperty, ApiDescripionUrl);
-        if (!String.IsNullOrWhiteSpace(ApiDescripionVersion)) writer.WriteString(ApiDescriptionVersionProperty, ApiDescripionVersion);
+        if (!string.IsNullOrWhiteSpace(ApiDescriptionUrl)) writer.WriteString(ApiDescriptionUrlProperty, ApiDescriptionUrl);
+        if (!string.IsNullOrWhiteSpace(ApiDescriptionVersion)) writer.WriteString(ApiDescriptionVersionProperty, ApiDescriptionVersion);
+        if (!string.IsNullOrWhiteSpace(ApiDeploymentBaseUrl)) writer.WriteString(ApiDeploymentBaseUrlProperty, ApiDeploymentBaseUrl);
 
-        if (Auth != null) {
+        if (Auth != null)
+        {
             writer.WritePropertyName(AuthProperty);
             Auth?.Write(writer);
         }
 
-        if (Requests.Count > 0) {
+        if (Requests.Count > 0)
+        {
             writer.WritePropertyName(RequestsProperty);
             writer.WriteStartArray();
             foreach (var request in Requests)
@@ -38,7 +43,8 @@ public class ApiDependency
             writer.WriteEndArray();
         }
 
-        if (Extensions != null) {
+        if (Extensions != null)
+        {
             writer.WritePropertyName(ExtensionsProperty);
             Extensions?.Write(writer);
         }
@@ -46,10 +52,11 @@ public class ApiDependency
         writer.WriteEndObject();
     }
     // Fixed fieldmap for ApiDependency
-    private static FixedFieldMap<ApiDependency> handlers = new()
+    private static readonly FixedFieldMap<ApiDependency> handlers = new()
     {
-        { ApiDescriptionUrlProperty, (o,v) => {o.ApiDescripionUrl = v.GetString();  } },
-        { ApiDescriptionVersionProperty, (o,v) => {o.ApiDescripionVersion = v.GetString();  } },
+        { ApiDescriptionUrlProperty, (o,v) => {o.ApiDescriptionUrl = v.GetString();  } },
+        { ApiDescriptionVersionProperty, (o,v) => {o.ApiDescriptionVersion = v.GetString();  } },
+        { ApiDeploymentBaseUrlProperty, (o,v) => {o.ApiDeploymentBaseUrl = v.GetString();  } },
         { AuthProperty, (o,v) => {o.Auth = Auth.Load(v);  } },
         { RequestsProperty, (o,v) => {o.Requests = ParsingHelpers.GetList(v, Request.Load);  } },
         { ExtensionsProperty, (o,v) => {o.Extensions = Extensions.Load(v);  } }
