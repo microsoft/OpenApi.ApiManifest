@@ -3,7 +3,8 @@ using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.OpenAI;
 
-public class Api {
+public class Api
+{
     public string? Type { get; set; }
     public string? Url { get; set; }
     public bool? IsUserAuthenticated { get; set; }
@@ -16,7 +17,7 @@ public class Api {
     }
 
     // Create handlers FixedFieldMap for Api
-    private static FixedFieldMap<Api> handlers = new()
+    private static readonly FixedFieldMap<Api> handlers = new()
     {
         { "type", (o,v) => {o.Type = v.GetString();  } },
         { "url", (o,v) => {o.Url = v.GetString();  } },

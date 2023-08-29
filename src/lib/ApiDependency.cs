@@ -6,14 +6,15 @@ public class ApiDependency
     public string? ApiDescriptionUrl { get; set; }
     public string? ApiDescriptionVersion { get; set; }
     public string? ApiDeploymentBaseUrl { get; set; }
-    public Auth? Auth { get; set; }
+    public AuthorizationRequirements? AuthorizationRequirements { get; set; }
     public List<Request> Requests { get; set; } = new List<Request>();
+    // TODO: Settle on a name. Extensions vs extensibility as per https://www.ietf.org/archive/id/draft-miller-api-manifest-01.html.
     public Extensions? Extensions { get; set; }
 
     private const string ApiDescriptionUrlProperty = "apiDescriptionUrl";
     private const string ApiDescriptionVersionProperty = "apiDescriptionVersion";
     private const string ApiDeploymentBaseUrlProperty = "apiDeploymentBaseUrl";
-    private const string AuthProperty = "auth";
+    private const string AuthorizationRequirementsProperty = "authorizationRequirements";
     private const string RequestsProperty = "requests";
     private const string ExtensionsProperty = "extensions";
 
@@ -26,10 +27,10 @@ public class ApiDependency
         if (!string.IsNullOrWhiteSpace(ApiDescriptionVersion)) writer.WriteString(ApiDescriptionVersionProperty, ApiDescriptionVersion);
         if (!string.IsNullOrWhiteSpace(ApiDeploymentBaseUrl)) writer.WriteString(ApiDeploymentBaseUrlProperty, ApiDeploymentBaseUrl);
 
-        if (Auth != null)
+        if (AuthorizationRequirements != null)
         {
-            writer.WritePropertyName(AuthProperty);
-            Auth?.Write(writer);
+            writer.WritePropertyName(AuthorizationRequirementsProperty);
+            AuthorizationRequirements?.Write(writer);
         }
 
         if (Requests.Count > 0)
@@ -51,13 +52,14 @@ public class ApiDependency
 
         writer.WriteEndObject();
     }
+
     // Fixed fieldmap for ApiDependency
     private static readonly FixedFieldMap<ApiDependency> handlers = new()
     {
         { ApiDescriptionUrlProperty, (o,v) => {o.ApiDescriptionUrl = v.GetString();  } },
         { ApiDescriptionVersionProperty, (o,v) => {o.ApiDescriptionVersion = v.GetString();  } },
         { ApiDeploymentBaseUrlProperty, (o,v) => {o.ApiDeploymentBaseUrl = v.GetString();  } },
-        { AuthProperty, (o,v) => {o.Auth = Auth.Load(v);  } },
+        { AuthorizationRequirementsProperty, (o,v) => {o.AuthorizationRequirements = AuthorizationRequirements.Load(v);  } },
         { RequestsProperty, (o,v) => {o.Requests = ParsingHelpers.GetList(v, Request.Load);  } },
         { ExtensionsProperty, (o,v) => {o.Extensions = Extensions.Load(v);  } }
     };

@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
-public class Auth
+public class AuthorizationRequirements
 {
     public string? ClientIdentifier { get; set; }
     public List<string>? AccessReference { get; set; }
@@ -11,16 +11,16 @@ public class Auth
     private const string ClientIdentifierProperty = "clientIdentifier";
     private const string AccessProperty = "access";
 
-    // Fixed fieldmap for Auth
-    private static FixedFieldMap<Auth> handlers = new()
+    // Fixed fieldmap for AuthorizationRequirements
+    private static readonly FixedFieldMap<AuthorizationRequirements> handlers = new()
     {
         { ClientIdentifierProperty, (o,v) => { o.ClientIdentifier = v.GetString();  } },
         { AccessProperty, (o,v) => { LoadAccessProperty(o, v); }}
     };
 
-    private static void LoadAccessProperty(Auth o, JsonElement v)
+    private static void LoadAccessProperty(AuthorizationRequirements o, JsonElement v)
     {
-        var content = v.EnumerateArray().FirstOrDefault();
+        JsonElement content = v.EnumerateArray().FirstOrDefault();
         if (content.ValueKind == JsonValueKind.String)
         {
             o.AccessReference = ParsingHelpers.GetListOfString(v);
@@ -44,12 +44,14 @@ public class Auth
             writer.WriteStartArray();
             if (AccessReference != null)
             {
-                foreach (var accessReference in AccessReference)
+                foreach (string accessReference in AccessReference)
                 {
                     writer.WriteStringValue(accessReference);
                 }
-            } else if (Access != null) {
-                foreach (var accessRequest in Access)
+            }
+            else if (Access != null)
+            {
+                foreach (AccessRequest accessRequest in Access)
                 {
                     accessRequest.Write(writer);
                 }
@@ -59,9 +61,9 @@ public class Auth
         writer.WriteEndObject();
     }
     // Load Method
-    internal static Auth Load(JsonElement value)
+    internal static AuthorizationRequirements Load(JsonElement value)
     {
-        var auth = new Auth();
+        var auth = new AuthorizationRequirements();
         ParsingHelpers.ParseMap(value, auth, handlers);
         return auth;
     }

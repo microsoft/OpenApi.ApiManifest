@@ -5,6 +5,8 @@ namespace Microsoft.OpenApi.ApiManifest;
 
 public class Extensions : Dictionary<string, JsonNode?>
 {
+    public Extensions() : base(StringComparer.OrdinalIgnoreCase) { }
+
     public static Extensions Load(JsonElement value)
     {
         var extensions = new Extensions();

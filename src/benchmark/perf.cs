@@ -1,17 +1,19 @@
-using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using Microsoft.OpenApi.ApiManifest;
+using System.Text.Json;
 
 [MemoryDiagnoser] // we need to enable it in explicit way
-public class Perf {
-   
+public class Perf
+{
+
     private MemoryStream? apiManifestStream;
     private JsonSerializerOptions? autoSerializationOptions;
-    
+
     [GlobalSetup]
     public void GlobalSetup()
     {
-        autoSerializationOptions = new JsonSerializerOptions() {
+        autoSerializationOptions = new JsonSerializerOptions()
+        {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
@@ -51,7 +53,7 @@ public class Perf {
     ]
 }
         ";
-        var writer = new StreamWriter(apiManifestStream);
+        StreamWriter writer = new StreamWriter(apiManifestStream);
         writer.Write(json);
         writer.Flush();
 
@@ -60,10 +62,10 @@ public class Perf {
     [Benchmark]
     public void DeserializeApiManifest()
     {
-       // Read string from stream
+        // Read string from stream
         apiManifestStream!.Position = 0;
-        var doc = JsonDocument.Parse(apiManifestStream);
-        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+        JsonDocument doc = JsonDocument.Parse(apiManifestStream);
+        _ = ApiManifestDocument.Load(doc.RootElement);
     }
 
 
@@ -71,15 +73,15 @@ public class Perf {
     public void AutoDeserializeApiManifest()
     {
         apiManifestStream!.Position = 0;
-        var apiManifest = JsonSerializer.Deserialize<ApiManifestDocument>(apiManifestStream, autoSerializationOptions);
+        _ = JsonSerializer.Deserialize<ApiManifestDocument>(apiManifestStream, autoSerializationOptions);
     }
 
     [Benchmark]
     public void AutoDeserializeApiManifestFromRootElement()
     {
         apiManifestStream!.Position = 0;
-        var doc = JsonDocument.Parse(apiManifestStream);
-        var apiManifest = JsonSerializer.Deserialize<ApiManifestDocument>(doc.RootElement, autoSerializationOptions);
+        JsonDocument doc = JsonDocument.Parse(apiManifestStream);
+        _ = JsonSerializer.Deserialize<ApiManifestDocument>(doc.RootElement, autoSerializationOptions);
     }
 
 }
