@@ -5,7 +5,6 @@ namespace Microsoft.OpenApi.ApiManifest;
 public class ApiManifestDocument
 {
     public Publisher? Publisher { get; set; }
-    // TODO: Add reader and writer for ApplicationName.
     public string? ApplicationName { get; set; }
     public ApiDependencies ApiDependencies { get; set; } = new ApiDependencies();
     public Extensions Extensions { get; set; } = new Extensions();
