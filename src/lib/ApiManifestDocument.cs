@@ -73,7 +73,7 @@ public class ApiManifestDocument
     private static void Validate(string? applicationName)
     {
         if (string.IsNullOrWhiteSpace(applicationName))
-            throw new ArgumentNullException(applicationName, String.Format(ErrorConstants.FieldIsRequired, "applicationName", "ApiManifest"));
+            throw new ArgumentNullException(applicationName, String.Format(ErrorMessage.FieldIsRequired, "applicationName", "ApiManifest"));
     }
 
     // Create fixed field map for ApiManifest

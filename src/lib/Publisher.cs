@@ -48,13 +48,13 @@ public class Publisher
     private static void Validate(string? name, string? contactEmail)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException(name, String.Format(ErrorConstants.FieldIsRequired, "name", "publisher"));
+            throw new ArgumentNullException(name, String.Format(ErrorMessage.FieldIsRequired, "name", "publisher"));
 
         if (string.IsNullOrWhiteSpace(contactEmail))
-            throw new ArgumentNullException(contactEmail, String.Format(ErrorConstants.FieldIsRequired, "contactEmail", "publisher"));
+            throw new ArgumentNullException(contactEmail, String.Format(ErrorMessage.FieldIsRequired, "contactEmail", "publisher"));
 
         if (!s_emailRegex.IsMatch(contactEmail))
-            throw new ArgumentException(string.Format(ErrorConstants.FieldIsNotValid, "contactEmail"), contactEmail);
+            throw new ArgumentException(string.Format(ErrorMessage.FieldIsNotValid, "contactEmail"), contactEmail);
     }
 
     private static readonly FixedFieldMap<Publisher> handlers = new()
