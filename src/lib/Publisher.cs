@@ -11,7 +11,7 @@ public class Publisher
     private const string NameProperty = "name";
     private const string ContactEmailProperty = "contactEmail";
 
-    private static readonly Regex s_emailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled, Constants.DefaultRegexTimeout);
+    private static readonly Regex s_emailRegex = new(@"^[^@\s]+@[^@\s]+$", RegexOptions.Compiled, Constants.DefaultRegexTimeout);
 
     public Publisher(string name, string contactEmail)
     {

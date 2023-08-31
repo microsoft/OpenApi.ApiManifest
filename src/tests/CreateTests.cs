@@ -16,13 +16,29 @@ public class CreateTests
         Assert.Empty(apiManifest.Extensions);
     }
 
-    [Fact]
-    public void CreatePublisher()
+    [Theory]
+    [InlineData("foo@bar")]
+    [InlineData("foo@bar.com")]
+    public void CreatePublisher(string contactEmail)
     {
-        var publisher = new Publisher(name: "Contoso", contactEmail: "foo@bar.com");
+        var publisher = new Publisher(name: "Contoso", contactEmail: contactEmail);
         Assert.Equal("Contoso", publisher.Name);
-        Assert.Equal("foo@bar.com", publisher.ContactEmail);
+        Assert.Equal(contactEmail, publisher.ContactEmail);
 
+    }
+
+    [Theory]
+    [InlineData("foo")]
+    [InlineData("foo@")]
+    [InlineData("foo@@bar.com")]
+    [InlineData("foo @bar.com")]
+    public void CreatePublisherWithInvalidEmail(string contactEmail)
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            var publisher = new Publisher(name: "Contoso", contactEmail: contactEmail);
+        }
+        );
     }
 
     // Create test to instantiate ApiManifest with auth
