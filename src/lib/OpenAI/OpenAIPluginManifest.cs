@@ -29,7 +29,7 @@ public class OpenAIPluginManifest
     }
 
     // Create handlers FixedFieldMap for OpenAIPluginManifest
-    private static FixedFieldMap<OpenAIPluginManifest> handlers = new()
+    private static readonly FixedFieldMap<OpenAIPluginManifest> handlers = new()
     {
         { "schema_version", (o,v) => {o.SchemaVersion = v.GetString();  } },
         { "name_for_human", (o,v) => {o.NameForHuman = v.GetString();  } },
@@ -52,15 +52,17 @@ public class OpenAIPluginManifest
         writer.WriteString("name_for_model", NameForModel);
         writer.WriteString("description_for_human", DescriptionForHuman);
         writer.WriteString("description_for_model", DescriptionForModel);
-        if (Auth != null) {
+        if (Auth != null)
+        {
             writer.WritePropertyName("auth");
             Auth.Write(writer);
         }
-        if (Api != null) {
+        if (Api != null)
+        {
             writer.WritePropertyName("api");
             Api?.Write(writer);
         }
-        if (LogoUrl != null)writer.WriteString("logo_url", LogoUrl);
+        if (LogoUrl != null) writer.WriteString("logo_url", LogoUrl);
         if (ContactEmail != null) writer.WriteString("contact_email", ContactEmail);
         if (LegalInfoUrl != null) writer.WriteString("legal_info_url", LegalInfoUrl);
         writer.WriteEndObject();

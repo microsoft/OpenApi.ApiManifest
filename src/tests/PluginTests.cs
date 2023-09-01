@@ -1,7 +1,7 @@
 // Write tests for OpenAIPluginManifest
 
-using System.Text.Json;
 using Microsoft.OpenApi.ApiManifest.OpenAI;
+using System.Text.Json;
 
 namespace Tests.OpenAI
 {
@@ -41,7 +41,7 @@ namespace Tests.OpenAI
             Assert.Equal("https://avatars.githubusercontent.com/foo", manifest.LogoUrl);
             Assert.Equal("joe@demo.com", manifest.ContactEmail);
         }
- 
+
         // Create minimal OpenAIPluginManifest
         [Fact]
         public void WriteOpenAIPluginManifest()
@@ -89,8 +89,8 @@ namespace Tests.OpenAI
     },
     ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
     ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true,ignoreWhiteSpaceDifferences: true);
-        }   
+}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        }
 
         [Fact]
         public void WriteOAuthTest()
@@ -104,7 +104,7 @@ namespace Tests.OpenAI
                 DescriptionForModel = "SomeModelDescription",
                 Auth = new ManifestOAuthAuth
                 {
-                    AuthorizationUrl = "https://api.openai.com/oauth/authorize", 
+                    AuthorizationUrl = "https://api.openai.com/oauth/authorize",
                 },
                 Api = new Api
                 {
@@ -142,10 +142,10 @@ namespace Tests.OpenAI
     },
     ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
     ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true,ignoreWhiteSpaceDifferences: true);
-        }   
+}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        }
 
     }
 
-    
+
 }

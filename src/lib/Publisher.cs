@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
@@ -6,36 +7,54 @@ public class Publisher
 {
     public string? Name { get; set; }
     public string? ContactEmail { get; set; }
+
     private const string NameProperty = "name";
     private const string ContactEmailProperty = "contactEmail";
 
-    public Publisher(string contactEmail)
+    private static readonly Regex s_emailRegex = new(@"^[^@\s]+@[^@\s]+$", RegexOptions.Compiled, Constants.DefaultRegexTimeout);
+
+    public Publisher(string name, string contactEmail)
     {
-        if (string.IsNullOrWhiteSpace(contactEmail)) throw new ArgumentNullException("Contact email is a required property of Publisher.");
+        Validate(name, contactEmail);
+
+        Name = name;
         ContactEmail = contactEmail;
     }
     private Publisher(JsonElement value)
     {
         ParsingHelpers.ParseMap(value, this, handlers);
-        // Validate that Name and ContactEmail are not null
-        if (string.IsNullOrWhiteSpace(Name)) throw new ArgumentNullException("Name is a required property of publisher.");
-        if (string.IsNullOrWhiteSpace(ContactEmail)) throw new ArgumentNullException("Contact email is a required property of Publisher.");
+        Validate(Name, ContactEmail);
     }
 
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
+        Validate(Name, ContactEmail);
+
         writer.WriteStartObject();
 
-        if (!string.IsNullOrWhiteSpace(Name)) writer.WriteString(NameProperty, Name);
-        if (!string.IsNullOrWhiteSpace(ContactEmail)) writer.WriteString(ContactEmailProperty, ContactEmail);
+        writer.WriteString(NameProperty, Name);
+        writer.WriteString(ContactEmailProperty, ContactEmail);
 
         writer.WriteEndObject();
     }
+
     // Load method
     internal static Publisher Load(JsonElement value)
     {
         return new Publisher(value);
+    }
+
+    private static void Validate(string? name, string? contactEmail)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentNullException(name, String.Format(ErrorMessage.FieldIsRequired, "name", "publisher"));
+
+        if (string.IsNullOrWhiteSpace(contactEmail))
+            throw new ArgumentNullException(contactEmail, String.Format(ErrorMessage.FieldIsRequired, "contactEmail", "publisher"));
+
+        if (!s_emailRegex.IsMatch(contactEmail))
+            throw new ArgumentException(string.Format(ErrorMessage.FieldIsNotValid, "contactEmail"), contactEmail);
     }
 
     private static readonly FixedFieldMap<Publisher> handlers = new()
