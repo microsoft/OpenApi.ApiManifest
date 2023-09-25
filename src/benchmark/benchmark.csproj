@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\lib\apimanifest.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Benchmarkdotnet" Version="0.13.7" />
+    <PackageReference Include="Benchmarkdotnet" Version="0.13.8" />
   </ItemGroup>
 
   <PropertyGroup>
