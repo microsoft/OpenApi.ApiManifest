@@ -2,36 +2,55 @@ using System.Text.Json.Nodes;
 
 namespace Tests.ApiManifest;
 
-public class CreateTests {
+public class CreateTests
+{
 
     [Fact]
-    public void CreateEmptyApiManifestDocument() {
-        var apiManifest = new ApiManifestDocument();
+    public void CreateApiManifestDocumentWithRequiredFields()
+    {
+        var apiManifest = new ApiManifestDocument("application-name");
         Assert.NotNull(apiManifest);
+        Assert.Equal("application-name", apiManifest.ApplicationName);
+        Assert.Null(apiManifest.Publisher);
+        Assert.Empty(apiManifest.ApiDependencies);
+        Assert.Empty(apiManifest.Extensions);
     }
 
-    [Fact]
-    public void CreatePublisher() {
-        var publisher = new Publisher(contactEmail: "foo@bar.com") {
-            Name = "Contoso"
-        };
+    [Theory]
+    [InlineData("foo@bar")]
+    [InlineData("foo@bar.com")]
+    public void CreatePublisher(string contactEmail)
+    {
+        var publisher = new Publisher(name: "Contoso", contactEmail: contactEmail);
         Assert.Equal("Contoso", publisher.Name);
-        Assert.Equal("foo@bar.com", publisher.ContactEmail);
-        
+        Assert.Equal(contactEmail, publisher.ContactEmail);
+
+    }
+
+    [Theory]
+    [InlineData("foo")]
+    [InlineData("foo@")]
+    [InlineData("foo@@bar.com")]
+    [InlineData("foo @bar.com")]
+    public void CreatePublisherWithInvalidEmail(string contactEmail)
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            var publisher = new Publisher(name: "Contoso", contactEmail: contactEmail);
+        }
+        );
     }
 
     // Create test to instantiate ApiManifest with auth
     [Fact]
-    public void CreateApiManifestWithAuth() {
-        var apiManifest = new ApiManifestDocument()
+    public void CreateApiManifestWithAuthorizationRequirements()
+    {
+        var apiManifest = new ApiManifestDocument("application-name")
         {
-            Publisher = new(contactEmail: "foo@bar.com")
-            {
-                Name = "Contoso"
-            },
+            Publisher = new(name: "Contoso", contactEmail: "foo@bar.com"),
             ApiDependencies = new() {
                 { "Contoso.Api", new() {
-                    Auth = new() {
+                    AuthorizationRequirements = new() {
                         ClientIdentifier = "2143234-234324-234234234-234",
                         Access = new() {
                             new() { Type = "oauth2",
@@ -41,13 +60,13 @@ public class CreateTests {
                                 }
                             }
                         }
-                    } 
+                    }
                 }
             }
         };
-        Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].Auth);
-        Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.Auth?.ClientIdentifier);
-        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.Auth?.Access[0].Type);
+        Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].AuthorizationRequirements);
+        Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.ClientIdentifier);
+        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access[0].Type);
     }
 
 }

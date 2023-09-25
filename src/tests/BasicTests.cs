@@ -6,7 +6,7 @@ namespace Tests.ApiManifest;
 
 public class BasicTests
 {
-    ApiManifestDocument exampleApiManifest;
+    private readonly ApiManifestDocument exampleApiManifest;
     public BasicTests()
     {
         exampleApiManifest = CreateDocument();
@@ -53,8 +53,8 @@ public class BasicTests
         Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescriptionUrl, apiManifest.ApiDependencies["example"].ApiDescriptionUrl);
-        var expectedAuth = exampleApiManifest.ApiDependencies["example"].Auth;
-        var actualAuth = apiManifest.ApiDependencies["example"].Auth;
+        var expectedAuth = exampleApiManifest.ApiDependencies["example"].AuthorizationRequirements;
+        var actualAuth = apiManifest.ApiDependencies["example"].AuthorizationRequirements;
         Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
         Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString());
     }
@@ -62,35 +62,46 @@ public class BasicTests
 
     // Create an empty document
     [Fact]
-    public void CreateEmptyDocument()
+    public void CreateDocumentWithRequiredFields()
     {
-        var doc = new ApiManifestDocument();
+        var doc = new ApiManifestDocument("application-name");
         Assert.NotNull(doc);
+        Assert.Equal("application-name", doc.ApplicationName);
         Assert.NotNull(doc.ApiDependencies);
         Assert.Empty(doc.ApiDependencies);
     }
 
-    // Create a document with a publisher that is missing contactEmail
+    // Create a document with a publisher that is missing required fields (name and contactEmail).
     [Fact]
-    public void CreateDocumentWithMissingContactEmail()
+    public void CreateDocumentWithMissingRequiredPublisherFields()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
         {
-            var doc = new ApiManifestDocument()
+            var doc = new ApiManifestDocument("application-name")
             {
-                Publisher = new("")
-                {
-                    Name = "Microsoft"
-                }
+                Publisher = new("", "")
             };
         }
         );
     }
+
+    [Fact]
+    public void FailToParseDocumentWithoutApplicationName()
+    {
+        _ = Assert.Throws<ArgumentNullException>(() =>
+        {
+            var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
+            var doc = JsonDocument.Parse(serializedValue);
+            _ = ApiManifestDocument.Load(doc.RootElement);
+        }
+        );
+    }
+
     [Fact]
     public void ParsesApiDescriptionUrlField()
     {
         // Given
-        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -103,7 +114,7 @@ public class BasicTests
     public void ParseApiDescriptionVersionField()
     {
         // Given
-        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionVersion\":\"v1.0\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDescriptionVersion\":\"v1.0\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -116,7 +127,7 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrl()
     {
         // Given
-        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -130,7 +141,7 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrlWithDifferentCasing()
     {
         // Given
-        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -144,7 +155,7 @@ public class BasicTests
     public void DoesNotFailOnExtraneousProperty()
     {
         // Given
-        var serializedValue = "{\"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\", \"APISensitivity\":\"low\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\", \"APISensitivity\":\"low\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -156,17 +167,14 @@ public class BasicTests
 
     private static ApiManifestDocument CreateDocument()
     {
-        return new ApiManifestDocument()
+        return new ApiManifestDocument("application-name")
         {
-            Publisher = new("example@example.org")
-            {
-                Name = "Microsoft"
-            },
+            Publisher = new("Microsoft", "example@example.org"),
             ApiDependencies = new() {
                 { "example", new()
                     {
                         ApiDescriptionUrl = "https://example.org",
-                        Auth = new()
+                        AuthorizationRequirements = new()
                         {
                             ClientIdentifier = "1234",
                             Access = new() {

@@ -5,8 +5,9 @@ namespace Microsoft.OpenApi.ApiManifest;
 
 public class AccessRequest
 {
-
+    // TODO: Add validation. Type is required and is unique for the described API according to RAR - https://www.rfc-editor.org/rfc/rfc9396.
     private const string TypeProperty = "type";
+    // TODO: Rename to 'actions' to match RAR spec.
     private const string ContentProperty = "content";
 
     public string? Type { get; set; }

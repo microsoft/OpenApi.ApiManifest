@@ -65,7 +65,7 @@ internal class ParsingHelpers
         {
             var value = item.GetString();
             if (value != null)
-                hashSet.Add(value);
+                _ = hashSet.Add(value);
         }
         return hashSet;
     }
@@ -77,7 +77,7 @@ internal class ParsingHelpers
         {
             var value = item.GetString();
             if (value != null)
-                sortedSet.Add(value);
+                _ = sortedSet.Add(value);
         }
         return sortedSet;
     }

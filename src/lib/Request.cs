@@ -26,7 +26,7 @@ public class Request
         writer.WriteEndObject();
     }
     // Fixed fieldmap for Request
-    private static FixedFieldMap<Request> handlers = new()
+    private static readonly FixedFieldMap<Request> handlers = new()
     {
         { MethodProperty, (o,v) => {o.Method = v.GetString();  } },
         { UriTemplateProperty, (o,v) => {o.UriTemplate = v.GetString();  } },
