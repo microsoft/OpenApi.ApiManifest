@@ -41,6 +41,23 @@ public class CreateTests
         );
     }
 
+    [Theory]
+    [InlineData("foo")]
+    [InlineData("https://foo.com")]
+    [InlineData("http://128.0.0.0")]
+    [InlineData("https://foo@@bar.com")]
+    [InlineData("https://foo bar.com/")]
+    [InlineData("https://graph.microsoft.com/v1.0")]
+    public void CreateApiDependencyWithInvalidApiDeploymentBaseUrl(string apiDeploymentBaseUrl)
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            var apiDependency = new ApiDependency();
+            apiDependency.ApiDeploymentBaseUrl = apiDeploymentBaseUrl;
+        }
+        );
+    }
+
     // Create test to instantiate ApiManifest with auth
     [Fact]
     public void CreateApiManifestWithAuthorizationRequirements()

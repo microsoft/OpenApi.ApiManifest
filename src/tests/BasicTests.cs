@@ -127,42 +127,42 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrl()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org/\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     [Fact]
     public void ParsesApiDeploymentBaseUrlWithDifferentCasing()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     [Fact]
     public void DoesNotFailOnExtraneousProperty()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\", \"APISensitivity\":\"low\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\", \"APISensitivity\":\"low\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     private static ApiManifestDocument CreateDocument()
