@@ -34,6 +34,8 @@ public class BasicTests
         Debug.WriteLine(json);
         var doc = JsonDocument.Parse(json);
         Assert.NotNull(doc);
+        Assert.Equal("application-name", doc.RootElement.GetProperty("applicationName").GetString());
+        Assert.Equal("Microsoft", doc.RootElement.GetProperty("publisher").GetProperty("name").GetString());
     }
 
     // Deserialize the ApiManifestDocument from a string
@@ -53,6 +55,7 @@ public class BasicTests
         Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescriptionUrl, apiManifest.ApiDependencies["example"].ApiDescriptionUrl);
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDeploymentBaseUrl, apiManifest.ApiDependencies["example"].ApiDeploymentBaseUrl);
         var expectedAuth = exampleApiManifest.ApiDependencies["example"].AuthorizationRequirements;
         var actualAuth = apiManifest.ApiDependencies["example"].AuthorizationRequirements;
         Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
@@ -174,6 +177,7 @@ public class BasicTests
                 { "example", new()
                     {
                         ApiDescriptionUrl = "https://example.org",
+                        ApiDeploymentBaseUrl = "https://example.org/v1.0/",
                         AuthorizationRequirements = new()
                         {
                             ClientIdentifier = "1234",
@@ -187,7 +191,7 @@ public class BasicTests
                             }
                         },
                         Requests = new() {
-                            new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
+                            new () { Method = "GET", UriTemplate = "/api/v1/endpoint" },
                             new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
                         }
                     }

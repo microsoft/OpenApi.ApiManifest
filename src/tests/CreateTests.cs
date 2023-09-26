@@ -67,6 +67,7 @@ public class CreateTests
             Publisher = new(name: "Contoso", contactEmail: "foo@bar.com"),
             ApiDependencies = new() {
                 { "Contoso.Api", new() {
+                    ApiDeploymentBaseUrl = "https://api.contoso.com/",
                     AuthorizationRequirements = new() {
                         ClientIdentifier = "2143234-234324-234234234-234",
                         Access = new() {
@@ -82,6 +83,7 @@ public class CreateTests
             }
         };
         Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].AuthorizationRequirements);
+        Assert.Equal("https://api.contoso.com/", apiManifest.ApiDependencies["Contoso.Api"].ApiDeploymentBaseUrl);
         Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.ClientIdentifier);
         Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access?[0].Type);
     }
