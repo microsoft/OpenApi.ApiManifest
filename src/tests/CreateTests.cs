@@ -83,7 +83,7 @@ public class CreateTests
         };
         Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].AuthorizationRequirements);
         Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.ClientIdentifier);
-        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access[0].Type);
+        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access?[0].Type);
     }
 
 }

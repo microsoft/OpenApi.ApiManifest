@@ -56,7 +56,7 @@ public class BasicTests
         var expectedAuth = exampleApiManifest.ApiDependencies["example"].AuthorizationRequirements;
         var actualAuth = apiManifest.ApiDependencies["example"].AuthorizationRequirements;
         Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
-        Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString());
+        Assert.Equivalent(expectedAuth?.Access?[0]?.Content?.ToJsonString(), actualAuth?.Access?[0]?.Content?.ToJsonString());
     }
 
 
