@@ -1,7 +1,7 @@
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
-public class Request
+public class RequestInfo
 {
     public string? Method { get; set; }
     public string? UriTemplate { get; set; }
@@ -26,7 +26,7 @@ public class Request
         writer.WriteEndObject();
     }
     // Fixed fieldmap for Request
-    private static readonly FixedFieldMap<Request> handlers = new()
+    private static readonly FixedFieldMap<RequestInfo> handlers = new()
     {
         { MethodProperty, (o,v) => {o.Method = v.GetString();  } },
         { UriTemplateProperty, (o,v) => {o.UriTemplate = v.GetString();  } },
@@ -35,9 +35,9 @@ public class Request
     };
 
     // Load Method
-    internal static Request Load(JsonElement value)
+    internal static RequestInfo Load(JsonElement value)
     {
-        var request = new Request();
+        var request = new RequestInfo();
         ParsingHelpers.ParseMap(value, request, handlers);
         return request;
     }

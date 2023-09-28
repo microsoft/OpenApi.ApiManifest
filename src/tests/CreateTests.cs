@@ -41,6 +41,23 @@ public class CreateTests
         );
     }
 
+    [Theory]
+    [InlineData("foo")]
+    [InlineData("https://foo.com")]
+    [InlineData("http://128.0.0.0")]
+    [InlineData("https://foo@@bar.com")]
+    [InlineData("https://foo bar.com/")]
+    [InlineData("https://graph.microsoft.com/v1.0")]
+    public void CreateApiDependencyWithInvalidApiDeploymentBaseUrl(string apiDeploymentBaseUrl)
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            var apiDependency = new ApiDependency();
+            apiDependency.ApiDeploymentBaseUrl = apiDeploymentBaseUrl;
+        }
+        );
+    }
+
     // Create test to instantiate ApiManifest with auth
     [Fact]
     public void CreateApiManifestWithAuthorizationRequirements()
@@ -50,6 +67,7 @@ public class CreateTests
             Publisher = new(name: "Contoso", contactEmail: "foo@bar.com"),
             ApiDependencies = new() {
                 { "Contoso.Api", new() {
+                    ApiDeploymentBaseUrl = "https://api.contoso.com/",
                     AuthorizationRequirements = new() {
                         ClientIdentifier = "2143234-234324-234234234-234",
                         Access = new() {
@@ -65,8 +83,9 @@ public class CreateTests
             }
         };
         Assert.NotNull(apiManifest.ApiDependencies["Contoso.Api"].AuthorizationRequirements);
+        Assert.Equal("https://api.contoso.com/", apiManifest.ApiDependencies["Contoso.Api"].ApiDeploymentBaseUrl);
         Assert.Equal("2143234-234324-234234234-234", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.ClientIdentifier);
-        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access[0].Type);
+        Assert.Equal("oauth2", apiManifest?.ApiDependencies["Contoso.Api"]?.AuthorizationRequirements?.Access?[0].Type);
     }
 
 }

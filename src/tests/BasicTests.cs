@@ -34,6 +34,8 @@ public class BasicTests
         Debug.WriteLine(json);
         var doc = JsonDocument.Parse(json);
         Assert.NotNull(doc);
+        Assert.Equal("application-name", doc.RootElement.GetProperty("applicationName").GetString());
+        Assert.Equal("Microsoft", doc.RootElement.GetProperty("publisher").GetProperty("name").GetString());
     }
 
     // Deserialize the ApiManifestDocument from a string
@@ -53,10 +55,11 @@ public class BasicTests
         Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDescriptionUrl, apiManifest.ApiDependencies["example"].ApiDescriptionUrl);
+        Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].ApiDeploymentBaseUrl, apiManifest.ApiDependencies["example"].ApiDeploymentBaseUrl);
         var expectedAuth = exampleApiManifest.ApiDependencies["example"].AuthorizationRequirements;
         var actualAuth = apiManifest.ApiDependencies["example"].AuthorizationRequirements;
         Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
-        Assert.Equivalent(expectedAuth?.Access[0].Content.ToJsonString(), actualAuth.Access[0].Content.ToJsonString());
+        Assert.Equivalent(expectedAuth?.Access?[0]?.Content?.ToJsonString(), actualAuth?.Access?[0]?.Content?.ToJsonString());
     }
 
 
@@ -127,42 +130,42 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrl()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org/\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     [Fact]
     public void ParsesApiDeploymentBaseUrlWithDifferentCasing()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     [Fact]
     public void DoesNotFailOnExtraneousProperty()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org\", \"APISensitivity\":\"low\"}}}";
+        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\", \"APISensitivity\":\"low\"}}}";
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
 
         // Then
-        Assert.Equal("https://example.org", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
+        Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
     private static ApiManifestDocument CreateDocument()
@@ -174,6 +177,7 @@ public class BasicTests
                 { "example", new()
                     {
                         ApiDescriptionUrl = "https://example.org",
+                        ApiDeploymentBaseUrl = "https://example.org/v1.0/",
                         AuthorizationRequirements = new()
                         {
                             ClientIdentifier = "1234",
@@ -187,7 +191,7 @@ public class BasicTests
                             }
                         },
                         Requests = new() {
-                            new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
+                            new () { Method = "GET", UriTemplate = "/api/v1/endpoint" },
                             new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
                         }
                     }
