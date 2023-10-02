@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Tests.ApiManifest;
+namespace Microsoft.OpenApi.ApiManifest.Tests;
 
 public class BasicTests
 {

@@ -3,7 +3,7 @@
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using System.Text.Json;
 
-namespace Tests.OpenAI
+namespace Microsoft.OpenApi.ApiManifest.Tests.OpenAI
 {
     public class OpenAIPluginManifestTests
     {
