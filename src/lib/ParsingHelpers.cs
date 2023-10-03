@@ -21,7 +21,7 @@ internal static class ParsingHelpers
                 // Logs the unknown property. We can switch to additional properties model in the future if need be.
                 Debug.WriteLine($"Skipped {element.Name}. The property is unknown.");
             }
-        };
+        }
     }
 
     internal static List<T> GetList<T>(JsonElement v, Func<JsonElement, T> load)
