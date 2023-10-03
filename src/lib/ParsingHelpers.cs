@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
@@ -32,6 +35,17 @@ internal class ParsingHelpers
         foreach (var item in v.EnumerateObject())
         {
             map.Add(item.Name, load(item.Value));
+        }
+        return map;
+    }
+
+    internal static Dictionary<string, string> GetMapOfString(JsonElement v)
+    {
+        var map = new Dictionary<string, string>();
+        foreach (var item in v.EnumerateObject())
+        {
+            var value = item.Value.GetString();
+            map.Add(item.Name, value ?? string.Empty);
         }
         return map;
     }

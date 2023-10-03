@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -59,6 +62,10 @@ public class BasicTests
         var actualAuth = apiManifest.ApiDependencies["example"].AuthorizationRequirements;
         Assert.Equivalent(expectedAuth?.ClientIdentifier, actualAuth?.ClientIdentifier);
         Assert.Equivalent(expectedAuth?.Access?[0]?.Content?.ToJsonString(), actualAuth?.Access?[0]?.Content?.ToJsonString());
+        Assert.NotNull(exampleApiManifest.Extensions["api-manifest-extension"]);
+        Assert.Equal(exampleApiManifest.Extensions["api-manifest-extension"]?.ToString(), apiManifest.Extensions?["api-manifest-extension"]?.ToString());
+        Assert.NotNull(exampleApiManifest.ApiDependencies["example"]?.Extensions?["EXAMPLE-API-DEPENDENCY-EXTENSION"]);
+        Assert.Equal(exampleApiManifest.ApiDependencies["example"]?.Extensions?["example-API-dependency-extension"]?.ToString(), apiManifest.ApiDependencies["example"]?.Extensions?["example-api-dependency-extension"]?.ToString());
     }
 
 
@@ -174,27 +181,35 @@ public class BasicTests
             Publisher = new("Microsoft", "example@example.org"),
             ApiDependencies = new() {
                 { "example", new()
+                {
+                    ApiDescriptionUrl = "https://example.org",
+                    ApiDeploymentBaseUrl = "https://example.org/v1.0/",
+                    AuthorizationRequirements = new()
                     {
-                        ApiDescriptionUrl = "https://example.org",
-                        ApiDeploymentBaseUrl = "https://example.org/v1.0/",
-                        AuthorizationRequirements = new()
-                        {
-                            ClientIdentifier = "1234",
-                            Access = new() {
-                                new () { Type= "application", Content = new JsonObject() {
-                                        { "scopes", new JsonArray() {"User.Read.All"} }}
-                                     } ,
-                                new () { Type= "delegated", Content = new JsonObject() {
-                                        { "scopes", new JsonArray() {"User.Read", "Mail.Read"} }}
-                                     }
+                        ClientIdentifier = "1234",
+                        Access = new() {
+                            new() { Type = "application", Content = new JsonObject() {
+                                { "scopes", new JsonArray() { "User.Read.All" } } }
+                            },
+                            new() { Type = "delegated", Content = new JsonObject() {
+                                { "scopes", new JsonArray() { "User.Read", "Mail.Read" } } }
                             }
-                        },
-                        Requests = new() {
-                            new () { Method = "GET", UriTemplate = "/api/v1/endpoint" },
-                            new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
                         }
+                    },
+                    Requests = new() {
+                        new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
+                        new() { Method = "POST", UriTemplate = "/api/v1/endpoint" }
+                    },
+                    Extensions = new()
+                    {
+                        { "example-api-dependency-extension", "dependency-extension-value" }
                     }
                 }
+                }
+            },
+            Extensions = new()
+            {
+                { "api-manifest-extension", "manifest-extension-value" }
             }
         };
     }
