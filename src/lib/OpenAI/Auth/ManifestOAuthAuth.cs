@@ -18,7 +18,7 @@ public class ManifestOAuthAuth : BaseManifestAuth
     {
         Type = "oauth";
     }
-    internal static FixedFieldMap<ManifestOAuthAuth> handlers = new()
+    internal static readonly FixedFieldMap<ManifestOAuthAuth> handlers = new()
     {
         { "type", (o,v) => {o.Type = v.GetString();  } },
         { "instructions", (o,v) => {o.Instructions = v.GetString();  } },

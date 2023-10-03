@@ -22,7 +22,7 @@ public class ManifestServiceHttpAuth : BaseManifestAuth
         VerificationTokens = verificationTokens;
     }
 
-    internal static FixedFieldMap<ManifestServiceHttpAuth> handlers = new()
+    internal static readonly FixedFieldMap<ManifestServiceHttpAuth> handlers = new()
     {
         { "type", (o,v) => {o.Type = v.GetString();  } },
         { "authorization_type", (o,v) => {o.AuthorizationType = v.GetString();  } },

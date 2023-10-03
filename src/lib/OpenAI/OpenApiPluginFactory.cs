@@ -4,7 +4,7 @@
 
 namespace Microsoft.OpenApi.ApiManifest.OpenAI;
 
-public class OpenApiPluginFactory
+public static class OpenApiPluginFactory
 {
 
     public static OpenAIPluginManifest CreateOpenAIPluginManifest()

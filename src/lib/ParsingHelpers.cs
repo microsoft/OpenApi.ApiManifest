@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
-internal class ParsingHelpers
+internal static class ParsingHelpers
 {
     public static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
@@ -15,7 +16,11 @@ internal class ParsingHelpers
             {
                 handler(permissionsDocument, element.Value);
             }
-            //TODO we should log the unknown property or use an additional properties model
+            else
+            {
+                // Logs the unknown property. We can switch to additional properties model in the future if need be.
+                Debug.WriteLine($"Skipped {element.Name}. The property is unknown.");
+            }
         };
     }
 

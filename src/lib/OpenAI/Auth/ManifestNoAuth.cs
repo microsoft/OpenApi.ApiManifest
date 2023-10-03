@@ -12,7 +12,7 @@ public class ManifestNoAuth : BaseManifestAuth
         Type = "none";
     }
 
-    internal static FixedFieldMap<ManifestNoAuth> handlers = new()
+    internal static readonly FixedFieldMap<ManifestNoAuth> handlers = new()
     {
         { "type", (o,v) => {o.Type = v.GetString();  } },
         { "instructions", (o,v) => {o.Instructions = v.GetString();  } },

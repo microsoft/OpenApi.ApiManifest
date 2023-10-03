@@ -130,11 +130,11 @@ public class OpenAIPluginManifestTests
         Assert.Equal("SomeHumanDescription", manifest.DescriptionForHuman);
         Assert.Equal("SomeModelDescription", manifest.DescriptionForModel);
         Assert.Equal("oauth", manifest.Auth?.Type);
-        Assert.Equal("https://api.openai.com/oauth/authorize", ((ManifestOAuthAuth)manifest.Auth)?.AuthorizationUrl);
-        Assert.Equal("application/json", ((ManifestOAuthAuth)manifest.Auth)?.AuthorizationContentType);
-        Assert.Equal("https://api.openai.com/oauth/token", ((ManifestOAuthAuth)manifest.Auth)?.ClientUrl);
-        Assert.Equal("all:all", ((ManifestOAuthAuth)manifest.Auth)?.Scope);
-        Assert.Equal("dummy_verification_token", ((ManifestOAuthAuth)manifest.Auth)?.VerificationTokens["OPENAI"]);
+        Assert.Equal("https://api.openai.com/oauth/authorize", ((ManifestOAuthAuth?)manifest.Auth)?.AuthorizationUrl);
+        Assert.Equal("application/json", ((ManifestOAuthAuth?)manifest.Auth)?.AuthorizationContentType);
+        Assert.Equal("https://api.openai.com/oauth/token", ((ManifestOAuthAuth?)manifest.Auth)?.ClientUrl);
+        Assert.Equal("all:all", ((ManifestOAuthAuth?)manifest.Auth)?.Scope);
+        Assert.Equal("dummy_verification_token", ((ManifestOAuthAuth?)manifest.Auth)?.VerificationTokens["OPENAI"]);
         Assert.Equal("openapi", manifest.Api?.Type);
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);
@@ -238,7 +238,7 @@ public class OpenAIPluginManifestTests
         Assert.Equal("SomeHumanDescription", manifest.DescriptionForHuman);
         Assert.Equal("SomeModelDescription", manifest.DescriptionForModel);
         Assert.Equal("user_http", manifest.Auth?.Type);
-        Assert.Equal("bearer", ((ManifestUserHttpAuth)manifest.Auth)?.AuthorizationType);
+        Assert.Equal("bearer", ((ManifestUserHttpAuth?)manifest.Auth)?.AuthorizationType);
         Assert.Equal("openapi", manifest.Api?.Type);
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);
@@ -329,8 +329,8 @@ public class OpenAIPluginManifestTests
         Assert.Equal("SomeHumanDescription", manifest.DescriptionForHuman);
         Assert.Equal("SomeModelDescription", manifest.DescriptionForModel);
         Assert.Equal("service_http", manifest.Auth?.Type);
-        Assert.Equal("bearer", ((ManifestServiceHttpAuth)manifest.Auth)?.AuthorizationType);
-        Assert.Equal("dummy_verification_token", ((ManifestServiceHttpAuth)manifest.Auth)?.VerificationTokens["OPENAI"]);
+        Assert.Equal("bearer", ((ManifestServiceHttpAuth?)manifest.Auth)?.AuthorizationType);
+        Assert.Equal("dummy_verification_token", ((ManifestServiceHttpAuth?)manifest.Auth)?.VerificationTokens["OPENAI"]);
         Assert.Equal("openapi", manifest.Api?.Type);
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);

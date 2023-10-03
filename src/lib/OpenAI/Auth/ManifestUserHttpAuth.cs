@@ -19,7 +19,7 @@ public class ManifestUserHttpAuth : BaseManifestAuth
         AuthorizationType = authorizationType;
     }
 
-    internal static FixedFieldMap<ManifestUserHttpAuth> handlers = new()
+    internal static readonly FixedFieldMap<ManifestUserHttpAuth> handlers = new()
     {
         { "type", (o,v) => {o.Type = v.GetString();  } },
         { "authorization_type", (o,v) => {o.AuthorizationType = v.GetString();  } },
