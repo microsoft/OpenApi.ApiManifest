@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.OpenAI;
+using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Tests;
@@ -11,22 +12,24 @@ public class OpenAIPluginManifestTests
     [Fact]
     public void LoadOpenAIPluginManifest()
     {
-        var json = @"{
-                ""schema_version"": ""1.0.0"",
-                ""name_for_human"": ""OpenAI GPT-3"",
-                ""name_for_model"": ""openai-gpt3"",
-                ""description_for_human"": ""OpenAI GPT-3 is a language model that generates text based on prompts."" ,
-                ""description_for_model"": ""OpenAI GPT-3 is a language model that generates text based on prompts."",
-                ""auth"": {
-                    ""type"": ""none""
-                },
-                ""api"": {
-                    ""type"": ""openapi"",
-                    ""url"": ""https://api.openai.com/v1""
-                },
-                ""logo_url"": ""https://avatars.githubusercontent.com/foo"",
-                ""contact_email"": ""joe@demo.com""
-            }";
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "OpenAI GPT-3",
+            "name_for_model": "openai-gpt3",
+            "description_for_human": "OpenAI GPT-3 is a language model that generates text based on prompts." ,
+            "description_for_model": "OpenAI GPT-3 is a language model that generates text based on prompts.",
+            "auth": {
+                "type": "none"
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1"
+            },
+            "logo_url": "https://avatars.githubusercontent.com/foo",
+            "contact_email": "joe@demo.com"
+        }
+        """;
 
         var doc = JsonDocument.Parse(json);
         var manifest = OpenAIPluginManifest.Load(doc.RootElement);
@@ -74,52 +77,56 @@ public class OpenAIPluginManifestTests
         var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
 
-        Assert.Equal(@"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""OpenAI GPT-3"",
-    ""name_for_model"": ""openai-gpt3"",
-    ""description_for_human"": ""OpenAI GPT-3 is a language model that generates text based on prompts."",
-    ""description_for_model"": ""OpenAI GPT-3 is a language model that generates text based on prompts."",
-    ""auth"": {
-        ""type"": ""none""
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        Assert.Equal("""
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "OpenAI GPT-3",
+            "name_for_model": "openai-gpt3",
+            "description_for_human": "OpenAI GPT-3 is a language model that generates text based on prompts.",
+            "description_for_model": "OpenAI GPT-3 is a language model that generates text based on prompts.",
+            "auth": {
+                "type": "none"
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
+        }
+        """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
     [Fact]
     public void LoadOpenAIPluginManifestWithOAuth()
     {
-        var json = @"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""oauth"",
-        ""authorization_url"": ""https://api.openai.com/oauth/authorize"",
-        ""authorization_content_type"": ""application/json"",
-        ""client_url"": ""https://api.openai.com/oauth/token"",
-        ""scope"": ""all:all"",
-        ""verification_tokens"": {
-            ""openai"": ""dummy_verification_token""
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "oauth",
+                "authorization_url": "https://api.openai.com/oauth/authorize",
+                "authorization_content_type": "application/json",
+                "client_url": "https://api.openai.com/oauth/token",
+                "scope": "all:all",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
         }
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}";
+        """;
 
         var doc = JsonDocument.Parse(json);
         var manifest = OpenAIPluginManifest.Load(doc.RootElement);
@@ -157,7 +164,7 @@ public class OpenAIPluginManifestTests
                 AuthorizationContentType = "application/json",
                 ClientUrl = "https://api.openai.com/oauth/token",
                 Scope = "all:all",
-                VerificationTokens = new OpenAI.Auth.VerificationTokens
+                VerificationTokens = new VerificationTokens
                 {
                     { "openai", "dummy_verification_token" }
                 }
@@ -181,53 +188,57 @@ public class OpenAIPluginManifestTests
         var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
 
-        Assert.Equal(@"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""oauth"",
-        ""client_url"": ""https://api.openai.com/oauth/token"",
-        ""scope"": ""all:all"",
-        ""authorization_url"": ""https://api.openai.com/oauth/authorize"",
-        ""authorization_content_type"": ""application/json"",
-        ""verification_tokens"": {
-            ""openai"": ""dummy_verification_token""
+        Assert.Equal("""
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "oauth",
+                "client_url": "https://api.openai.com/oauth/token",
+                "scope": "all:all",
+                "authorization_url": "https://api.openai.com/oauth/authorize",
+                "authorization_content_type": "application/json",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
         }
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
     [Fact]
     public void LoadOpenAIPluginManifestWithUserHttp()
     {
-        var json = @"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""user_http"",
-        ""authorization_type"": ""bearer""
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}";
+        var json = """
+        {
+        "schema_version": "1.0.0",
+        "name_for_human": "TestOAuth",
+        "name_for_model": "TestOAuthModel",
+        "description_for_human": "SomeHumanDescription",
+        "description_for_model": "SomeModelDescription",
+        "auth": {
+            "type": "user_http",
+            "authorization_type": "bearer"
+        },
+        "api": {
+            "type": "openapi",
+            "url": "https://api.openai.com/v1",
+            "is_user_authenticated": false
+        },
+        "logo_url": "https://avatars.githubusercontent.com/bar",
+        "contact_email": "joe@test.com"
+        }
+        """;
 
         var doc = JsonDocument.Parse(json);
         var manifest = OpenAIPluginManifest.Load(doc.RootElement);
@@ -275,50 +286,54 @@ public class OpenAIPluginManifestTests
         var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
 
-        Assert.Equal(@"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""user_http"",
-        ""authorization_type"": ""bearer""
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        Assert.Equal("""
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "user_http",
+                "authorization_type": "bearer"
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
+        }
+        """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
     [Fact]
     public void LoadOpenAIPluginManifestWithServiceHttp()
     {
-        var json = @"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""service_http"",
-        ""authorization_type"": ""bearer"",
-        ""verification_tokens"": {
-            ""openai"": ""dummy_verification_token""
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "service_http",
+                "authorization_type": "bearer",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
         }
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}";
+        """;
 
         var doc = JsonDocument.Parse(json);
         var manifest = OpenAIPluginManifest.Load(doc.RootElement);
@@ -347,7 +362,7 @@ public class OpenAIPluginManifestTests
             NameForModel = "TestOAuthModel",
             DescriptionForHuman = "SomeHumanDescription",
             DescriptionForModel = "SomeModelDescription",
-            Auth = new ManifestServiceHttpAuth(new OpenAI.Auth.VerificationTokens
+            Auth = new ManifestServiceHttpAuth(new VerificationTokens
             {
                 { "openai", "dummy_verification_token" }
             }),
@@ -370,26 +385,28 @@ public class OpenAIPluginManifestTests
         var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
 
-        Assert.Equal(@"{
-    ""schema_version"": ""1.0.0"",
-    ""name_for_human"": ""TestOAuth"",
-    ""name_for_model"": ""TestOAuthModel"",
-    ""description_for_human"": ""SomeHumanDescription"",
-    ""description_for_model"": ""SomeModelDescription"",
-    ""auth"": {
-        ""type"": ""service_http"",
-        ""authorization_type"": ""bearer"",
-        ""verification_tokens"": {
-            ""openai"": ""dummy_verification_token""
+        Assert.Equal("""
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "service_http",
+                "authorization_type": "bearer",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com"
         }
-    },
-    ""api"": {
-        ""type"": ""openapi"",
-        ""url"": ""https://api.openai.com/v1"",
-        ""is_user_authenticated"": false
-    },
-    ""logo_url"": ""https://avatars.githubusercontent.com/bar"",
-    ""contact_email"": ""joe@test.com""
-}", json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 }

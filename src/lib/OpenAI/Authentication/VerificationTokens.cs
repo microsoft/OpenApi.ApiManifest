@@ -4,7 +4,7 @@
 
 using System.Text.Json;
 
-namespace Microsoft.OpenApi.ApiManifest.OpenAI.Auth;
+namespace Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 
 public class VerificationTokens : Dictionary<string, string>
 {

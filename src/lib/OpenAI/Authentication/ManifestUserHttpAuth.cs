@@ -3,10 +3,11 @@
 
 using System.Text.Json;
 
-namespace Microsoft.OpenApi.ApiManifest.OpenAI;
+namespace Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 
 public class ManifestUserHttpAuth : BaseManifestAuth
 {
+    private const string AuthorizationTypeProperty = "authorization_type";
     public string? AuthorizationType { get; set; }
     public ManifestUserHttpAuth(string? authorizationType)
     {
@@ -19,18 +20,18 @@ public class ManifestUserHttpAuth : BaseManifestAuth
         AuthorizationType = authorizationType;
     }
 
-    internal static readonly FixedFieldMap<ManifestUserHttpAuth> handlers = new()
+    public static ManifestUserHttpAuth Load(JsonElement value)
     {
-        { "type", (o,v) => {o.Type = v.GetString();  } },
-        { "authorization_type", (o,v) => {o.AuthorizationType = v.GetString();  } },
-        { "instructions", (o,v) => {o.Instructions = v.GetString();  } },
-    };
+        var auth = new ManifestUserHttpAuth(value.GetProperty(AuthorizationTypeProperty).GetString());
+        auth.LoadProperties(value);
+        return auth;
+    }
+
     public override void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
-        writer.WriteString("type", Type);
-        writer.WriteString("authorization_type", AuthorizationType);
-        if (Instructions != null) writer.WriteString("instructions", Instructions);
+        WriteProperties(writer);
+        writer.WriteString(AuthorizationTypeProperty, AuthorizationType);
         writer.WriteEndObject();
     }
 }

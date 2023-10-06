@@ -50,7 +50,7 @@ internal static class ParsingHelpers
         foreach (var item in v.EnumerateObject())
         {
             var value = item.Value.GetString();
-            map.Add(item.Name, value ?? string.Empty);
+            map.Add(item.Name, !string.IsNullOrWhiteSpace(value) ? value : string.Empty);
         }
         return map;
     }
