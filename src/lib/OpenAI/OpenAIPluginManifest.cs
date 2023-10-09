@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 using System.Text.Json;
 
@@ -20,27 +21,92 @@ public class OpenAIPluginManifest
     private const string ContactEmailProperty = "contact_email";
     private const string LegalInfoUrlProperty = "legal_info_url";
 
+    /// <summary>
+    /// REQUIRED. The version of the manifest schema.
+    /// </summary>
     public string? SchemaVersion { get; set; }
+    /// <summary>
+    /// REQUIRED. The name of the plugin that will be shown to users.
+    /// </summary>
     public string? NameForHuman { get; set; }
+    /// <summary>
+    /// REQUIRED. The name the model will use to target the plugin.
+    /// </summary>
     public string? NameForModel { get; set; }
+    /// <summary>
+    /// REQUIRED. A description of the plugin that will be shown to users.
+    /// </summary>
     public string? DescriptionForHuman { get; set; }
+    /// <summary>
+    /// REQUIRED. Description better tailored to the model, such as token context length considerations or keyword usage for improved plugin prompting.
+    /// </summary>
     public string? DescriptionForModel { get; set; }
+    /// <summary>
+    /// REQUIRED. The authentication schema type for the plugin. This can be one of the following types: <see cref="ManifestNoAuth"/>, <see cref="ManifestOAuthAuth"/>, <see cref="ManifestUserHttpAuth"/>, and <see cref="ManifestServiceHttpAuth"/>.
+    /// </summary>
     public BaseManifestAuth? Auth { get; set; }
+    /// <summary>
+    /// REQUIRED. The API specification for the plugin.
+    /// </summary>
     public Api? Api { get; set; }
+    /// <summary>
+    /// REQUIRED. A URL to a logo for the plugin. This logo will be shown to users. Suggested size: 512 x 512. Transparent backgrounds are supported. Must be an image, no GIFs are allowed.
+    /// </summary>
     public string? LogoUrl { get; set; }
+    /// <summary>
+    /// REQUIRED. An email address for safety/moderation, support, and deactivation.
+    /// </summary>
     public string? ContactEmail { get; set; }
+    /// <summary>
+    /// REQUIRED. A URL to a page with legal information about the plugin.
+    /// </summary>
     public string? LegalInfoUrl { get; set; }
 
-    public OpenAIPluginManifest()
+    public OpenAIPluginManifest(string nameForModel, string nameForHuman, string descriptionForHuman, string descriptionForModel, BaseManifestAuth auth, Api api, string logoUrl, string contactEmail, string legalInfoUrl, string schemaVersion = "v1")
     {
-        SchemaVersion = "v1";
+        SchemaVersion = schemaVersion;
+        NameForHuman = nameForHuman;
+        NameForModel = nameForModel;
+        DescriptionForHuman = descriptionForHuman;
+        DescriptionForModel = descriptionForModel;
+        Auth = auth;
+        Api = api;
+        LogoUrl = logoUrl;
+        ContactEmail = contactEmail;
+        LegalInfoUrl = legalInfoUrl;
+
+        Validate(this);
+    }
+
+    internal OpenAIPluginManifest(JsonElement value)
+    {
+        ParsingHelpers.ParseMap(value, this, handlers);
+        Validate(this);
     }
 
     public static OpenAIPluginManifest Load(JsonElement value)
     {
-        var manifest = new OpenAIPluginManifest();
-        ParsingHelpers.ParseMap(value, manifest, handlers);
-        return manifest;
+        return new OpenAIPluginManifest(value);
+    }
+
+    //Write method
+    public void Write(Utf8JsonWriter writer)
+    {
+        Validate(this);
+        writer.WriteStartObject();
+        writer.WriteString(SchemaVersionProperty, SchemaVersion);
+        writer.WriteString(NameForHumanProperty, NameForHuman);
+        writer.WriteString(NameForModelProperty, NameForModel);
+        writer.WriteString(DescriptionForHumanProperty, DescriptionForHuman);
+        writer.WriteString(DescriptionForModelProperty, DescriptionForModel);
+        writer.WritePropertyName(AuthProperty);
+        Auth?.Write(writer);
+        writer.WritePropertyName(ApiProperty);
+        Api?.Write(writer);
+        writer.WriteString(LogoUrlProperty, LogoUrl);
+        writer.WriteString(ContactEmailProperty, ContactEmail);
+        writer.WriteString(LegalInfoUrlProperty, LegalInfoUrl);
+        writer.WriteEndObject();
     }
 
     // Create handlers FixedFieldMap for OpenAIPluginManifest
@@ -58,29 +124,30 @@ public class OpenAIPluginManifest
         { LegalInfoUrlProperty, (o,v) => {o.LegalInfoUrl = v.GetString();  } },
     };
 
-    //Write method
-    public void Write(Utf8JsonWriter writer)
+    /// <summary>
+    /// Validate the provided <see cref="OpenAIPluginManifest"/> based on the Open AI Plugin manifest schema at https://platform.openai.com/docs/plugins/getting-started/plugin-manifest.
+    /// </summary>
+    /// <param name="openAIPluginManifest">The <see cref="OpenAIPluginManifest"/> to validate.</param>
+    private void Validate(OpenAIPluginManifest openAIPluginManifest)
     {
-        writer.WriteStartObject();
-        writer.WriteString(SchemaVersionProperty, SchemaVersion);
-        writer.WriteString(NameForHumanProperty, NameForHuman);
-        writer.WriteString(NameForModelProperty, NameForModel);
-        writer.WriteString(DescriptionForHumanProperty, DescriptionForHuman);
-        writer.WriteString(DescriptionForModelProperty, DescriptionForModel);
-        if (Auth != null)
-        {
-            writer.WritePropertyName(AuthProperty);
-            Auth.Write(writer);
-        }
-        if (Api != null)
-        {
-            writer.WritePropertyName(ApiProperty);
-            Api?.Write(writer);
-        }
-        if (LogoUrl != null) writer.WriteString(LogoUrlProperty, LogoUrl);
-        if (ContactEmail != null) writer.WriteString(ContactEmailProperty, ContactEmail);
-        if (LegalInfoUrl != null) writer.WriteString(LegalInfoUrlProperty, LegalInfoUrl);
-        writer.WriteEndObject();
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(NameForHuman), openAIPluginManifest.NameForHuman, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateLength(nameof(NameForHuman), openAIPluginManifest.NameForHuman, 20);
+
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(NameForModel), openAIPluginManifest.NameForModel, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateLength(nameof(NameForModel), openAIPluginManifest.NameForModel, 50);
+
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(DescriptionForHuman), openAIPluginManifest.DescriptionForHuman, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateLength(nameof(DescriptionForHuman), openAIPluginManifest.DescriptionForHuman, 100);
+
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(DescriptionForModel), openAIPluginManifest.DescriptionForModel, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateLength(nameof(DescriptionForModel), openAIPluginManifest.DescriptionForModel, 8000);
+
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(SchemaVersion), openAIPluginManifest.SchemaVersion, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateNullObject(nameof(Auth), openAIPluginManifest.Auth, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateNullObject(nameof(Api), openAIPluginManifest.Api, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(LogoUrl), openAIPluginManifest.LogoUrl, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateEmail(nameof(ContactEmail), openAIPluginManifest.ContactEmail, nameof(OpenAIPluginManifest));
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(LegalInfoUrl), openAIPluginManifest.LegalInfoUrl, nameof(OpenAIPluginManifest));
     }
 }
 

@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
@@ -6,11 +7,12 @@ public class ApiDependency
     public string? ApiDescriptionUrl { get; set; }
     public string? ApiDescriptionVersion { get; set; }
     private string? _apiDeploymentBaseUrl;
-    public string? ApiDeploymentBaseUrl {
+    public string? ApiDeploymentBaseUrl
+    {
         get { return _apiDeploymentBaseUrl; }
         set
         {
-            ValidateApiDeploymentBaseUrl(value);
+            ValidationHelpers.ValidateBaseUrl(nameof(ApiDeploymentBaseUrl), value);
             _apiDeploymentBaseUrl = value;
         }
     }
@@ -67,15 +69,6 @@ public class ApiDependency
         var apiDependency = new ApiDependency();
         ParsingHelpers.ParseMap(value, apiDependency, handlers);
         return apiDependency;
-    }
-
-    private static void ValidateApiDeploymentBaseUrl(string? apiDeploymentBaseUrl)
-    {
-        // Check if the apiDeploymentBaseUrl is a valid URL and ends in a slash.
-        if (apiDeploymentBaseUrl == null || !apiDeploymentBaseUrl.EndsWith("/", StringComparison.Ordinal) || !Uri.TryCreate(apiDeploymentBaseUrl, UriKind.Absolute, out _))
-        {
-            throw new ArgumentException($"The {nameof(apiDeploymentBaseUrl)} must be a valid URL and end in a slash.");
-        }
     }
 
     // Fixed fieldmap for ApiDependency

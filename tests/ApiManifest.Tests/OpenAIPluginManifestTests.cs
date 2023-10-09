@@ -9,8 +9,9 @@ namespace Microsoft.OpenApi.ApiManifest.Tests;
 
 public class OpenAIPluginManifestTests
 {
+    // With no auth.
     [Fact]
-    public void LoadOpenAIPluginManifest()
+    public void LoadOpenAIPluginManifestWithNoAuth()
     {
         var json = """
         {
@@ -27,6 +28,7 @@ public class OpenAIPluginManifestTests
                 "url": "https://api.openai.com/v1"
             },
             "logo_url": "https://avatars.githubusercontent.com/foo",
+            "legal_info_url": "https://legalinfo.foobar.com",
             "contact_email": "joe@demo.com"
         }
         """;
@@ -44,29 +46,13 @@ public class OpenAIPluginManifestTests
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/foo", manifest.LogoUrl);
         Assert.Equal("joe@demo.com", manifest.ContactEmail);
+        Assert.Equal("https://legalinfo.foobar.com", manifest.LegalInfoUrl);
     }
 
-    // Create minimal OpenAIPluginManifest
     [Fact]
-    public void WriteOpenAIPluginManifest()
+    public void WriteOpenAIPluginManifestWithNoAuth()
     {
-        var manifest = new OpenAIPluginManifest
-        {
-            SchemaVersion = "1.0.0",
-            NameForHuman = "OpenAI GPT-3",
-            NameForModel = "openai-gpt3",
-            DescriptionForHuman = "OpenAI GPT-3 is a language model that generates text based on prompts.",
-            DescriptionForModel = "OpenAI GPT-3 is a language model that generates text based on prompts.",
-            Auth = new ManifestNoAuth(),
-            Api = new Api
-            {
-                Type = "openapi",
-                Url = "https://api.openai.com/v1",
-                IsUserAuthenticated = false
-            },
-            LogoUrl = "https://avatars.githubusercontent.com/bar",
-            ContactEmail = "joe@test.com"
-        };
+        var manifest = CreateManifestPlugIn();
 
         // serialize using the Write method
         var stream = new MemoryStream();
@@ -80,10 +66,10 @@ public class OpenAIPluginManifestTests
         Assert.Equal("""
         {
             "schema_version": "1.0.0",
-            "name_for_human": "OpenAI GPT-3",
-            "name_for_model": "openai-gpt3",
-            "description_for_human": "OpenAI GPT-3 is a language model that generates text based on prompts.",
-            "description_for_model": "OpenAI GPT-3 is a language model that generates text based on prompts.",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
             "auth": {
                 "type": "none"
             },
@@ -93,11 +79,13 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
-            "contact_email": "joe@test.com"
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
         }
         """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
+    // With no OAuth.
     [Fact]
     public void LoadOpenAIPluginManifestWithOAuth()
     {
@@ -124,6 +112,7 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
+            "legal_info_url": "https://legalinfo.foobar.com",
             "contact_email": "joe@test.com"
         }
         """;
@@ -145,38 +134,24 @@ public class OpenAIPluginManifestTests
         Assert.Equal("openapi", manifest.Api?.Type);
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);
+        Assert.Equal("https://legalinfo.foobar.com", manifest.LegalInfoUrl);
         Assert.Equal("joe@test.com", manifest.ContactEmail);
     }
 
     [Fact]
     public void WriteOpenAIPluginManifestWithOAuth()
     {
-        var manifest = new OpenAIPluginManifest
+        var manifest = CreateManifestPlugIn();
+        manifest.Auth = new ManifestOAuthAuth
         {
-            SchemaVersion = "1.0.0",
-            NameForHuman = "TestOAuth",
-            NameForModel = "TestOAuthModel",
-            DescriptionForHuman = "SomeHumanDescription",
-            DescriptionForModel = "SomeModelDescription",
-            Auth = new ManifestOAuthAuth
-            {
-                AuthorizationUrl = "https://api.openai.com/oauth/authorize",
-                AuthorizationContentType = "application/json",
-                ClientUrl = "https://api.openai.com/oauth/token",
-                Scope = "all:all",
-                VerificationTokens = new VerificationTokens
+            AuthorizationUrl = "https://api.openai.com/oauth/authorize",
+            AuthorizationContentType = "application/json",
+            ClientUrl = "https://api.openai.com/oauth/token",
+            Scope = "all:all",
+            VerificationTokens = new VerificationTokens
                 {
                     { "openai", "dummy_verification_token" }
                 }
-            },
-            Api = new Api
-            {
-                Type = "openapi",
-                Url = "https://api.openai.com/v1",
-                IsUserAuthenticated = false
-            },
-            LogoUrl = "https://avatars.githubusercontent.com/bar",
-            ContactEmail = "joe@test.com"
         };
 
         // serialize using the Write method
@@ -211,11 +186,13 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
-            "contact_email": "joe@test.com"
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
         }
         """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
+    // With user HTTP.
     [Fact]
     public void LoadOpenAIPluginManifestWithUserHttp()
     {
@@ -236,6 +213,7 @@ public class OpenAIPluginManifestTests
             "is_user_authenticated": false
         },
         "logo_url": "https://avatars.githubusercontent.com/bar",
+        "legal_info_url": "https://legalinfo.foobar.com",
         "contact_email": "joe@test.com"
         }
         """;
@@ -254,28 +232,14 @@ public class OpenAIPluginManifestTests
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);
         Assert.Equal("joe@test.com", manifest.ContactEmail);
+        Assert.Equal("https://legalinfo.foobar.com", manifest.LegalInfoUrl);
     }
 
     [Fact]
     public void WriteOpenAIPluginManifestWithUserHttp()
     {
-        var manifest = new OpenAIPluginManifest
-        {
-            SchemaVersion = "1.0.0",
-            NameForHuman = "TestOAuth",
-            NameForModel = "TestOAuthModel",
-            DescriptionForHuman = "SomeHumanDescription",
-            DescriptionForModel = "SomeModelDescription",
-            Auth = new ManifestUserHttpAuth("bearer"),
-            Api = new Api
-            {
-                Type = "openapi",
-                Url = "https://api.openai.com/v1",
-                IsUserAuthenticated = false
-            },
-            LogoUrl = "https://avatars.githubusercontent.com/bar",
-            ContactEmail = "joe@test.com"
-        };
+        var manifest = CreateManifestPlugIn();
+        manifest.Auth = new ManifestUserHttpAuth("bearer");
 
         // serialize using the Write method
         var stream = new MemoryStream();
@@ -303,11 +267,13 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
-            "contact_email": "joe@test.com"
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
         }
         """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
+    // With service HTTP.
     [Fact]
     public void LoadOpenAIPluginManifestWithServiceHttp()
     {
@@ -331,7 +297,8 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
-            "contact_email": "joe@test.com"
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
         }
         """;
 
@@ -350,31 +317,17 @@ public class OpenAIPluginManifestTests
         Assert.Equal("https://api.openai.com/v1", manifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", manifest.LogoUrl);
         Assert.Equal("joe@test.com", manifest.ContactEmail);
+        Assert.Equal("https://legalinfo.foobar.com", manifest.LegalInfoUrl);
     }
 
     [Fact]
     public void WriteOpenAIPluginManifestWithServiceHttp()
     {
-        var manifest = new OpenAIPluginManifest
+        var manifest = CreateManifestPlugIn();
+        manifest.Auth = new ManifestServiceHttpAuth(new VerificationTokens
         {
-            SchemaVersion = "1.0.0",
-            NameForHuman = "TestOAuth",
-            NameForModel = "TestOAuthModel",
-            DescriptionForHuman = "SomeHumanDescription",
-            DescriptionForModel = "SomeModelDescription",
-            Auth = new ManifestServiceHttpAuth(new VerificationTokens
-            {
-                { "openai", "dummy_verification_token" }
-            }),
-            Api = new Api
-            {
-                Type = "openapi",
-                Url = "https://api.openai.com/v1",
-                IsUserAuthenticated = false
-            },
-            LogoUrl = "https://avatars.githubusercontent.com/bar",
-            ContactEmail = "joe@test.com"
-        };
+            { "openai", "dummy_verification_token" }
+        });
 
         // serialize using the Write method
         var stream = new MemoryStream();
@@ -405,8 +358,119 @@ public class OpenAIPluginManifestTests
                 "is_user_authenticated": false
             },
             "logo_url": "https://avatars.githubusercontent.com/bar",
-            "contact_email": "joe@test.com"
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
         }
         """, json, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+    }
+
+    [Theory]
+    [InlineData("foo")]
+    [InlineData("foo@")]
+    [InlineData("foo@@bar.com")]
+    [InlineData("foo @bar.com")]
+    public void WriteOpenAIPluginManifestWithInvalidContactEmail(string email)
+    {
+        var manifest = CreateManifestPlugIn();
+        manifest.ContactEmail = email;
+
+        // serialize using the Write method
+        var stream = new MemoryStream();
+        var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            manifest.Write(writer);
+        });
+    }
+
+    [Fact]
+    public void LoadOpenAIPluginManifestWithInvalidAuthType()
+    {
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "NOT_VALID_service_http",
+                "authorization_type": "bearer",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
+        }
+        """;
+
+        var doc = JsonDocument.Parse(json);
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            _ = OpenAIPluginManifest.Load(doc.RootElement);
+        });
+        Assert.Equal("Unknown auth type: not_valid_service_http (Parameter 'value')", exception.Message);
+    }
+
+    [Fact]
+    public void LoadOpenAIPluginManifestWithIncompleteManifest()
+    {
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "service_http",
+                "authorization_type": "bearer",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "url": "https://api.openai.com/v1",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
+        }
+        """;
+
+        var doc = JsonDocument.Parse(json);
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+        {
+            _ = OpenAIPluginManifest.Load(doc.RootElement);
+        });
+        Assert.Equal("'NameForModel' is a required property of 'OpenAIPluginManifest'. (Parameter 'NameForModel')", exception.Message);
+    }
+
+    private static OpenAIPluginManifest CreateManifestPlugIn()
+    {
+        return OpenApiPluginFactory.CreateOpenAIPluginManifest(
+            schemaVersion: "1.0.0",
+            nameForHuman: "TestOAuth",
+            nameForModel: "TestOAuthModel",
+            descriptionForHuman: "SomeHumanDescription",
+            descriptionForModel: "SomeModelDescription",
+            auth: new ManifestNoAuth(),
+            api: new Api
+            {
+                Type = "openapi",
+                Url = "https://api.openai.com/v1",
+                IsUserAuthenticated = false
+            },
+            logoUrl: "https://avatars.githubusercontent.com/bar",
+            legalInfoUrl: "https://legalinfo.foobar.com",
+            contactEmail: "joe@test.com");
     }
 }

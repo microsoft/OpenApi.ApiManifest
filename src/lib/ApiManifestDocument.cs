@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.OpenApi.ApiManifest.Helpers;
+using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
@@ -72,8 +73,7 @@ public class ApiManifestDocument
 
     private static void Validate(string? applicationName)
     {
-        if (string.IsNullOrWhiteSpace(applicationName))
-            throw new ArgumentNullException(applicationName, String.Format(ErrorMessage.FieldIsRequired, "applicationName", "ApiManifest"));
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(applicationName), applicationName, nameof(ApiManifestDocument));
     }
 
     // Create fixed field map for ApiManifest
