@@ -62,20 +62,14 @@ public class OpenAIPluginManifest
     /// </summary>
     public string? LegalInfoUrl { get; set; }
 
-    public OpenAIPluginManifest(string nameForModel, string nameForHuman, string descriptionForHuman, string descriptionForModel, BaseManifestAuth auth, Api api, string logoUrl, string contactEmail, string legalInfoUrl, string schemaVersion = "v1")
+    public OpenAIPluginManifest(string nameForModel, string nameForHuman, string logoUrl, string contactEmail, string legalInfoUrl, string schemaVersion = "v1")
     {
         SchemaVersion = schemaVersion;
         NameForHuman = nameForHuman;
         NameForModel = nameForModel;
-        DescriptionForHuman = descriptionForHuman;
-        DescriptionForModel = descriptionForModel;
-        Auth = auth;
-        Api = api;
         LogoUrl = logoUrl;
         ContactEmail = contactEmail;
         LegalInfoUrl = legalInfoUrl;
-
-        Validate(this);
     }
 
     internal OpenAIPluginManifest(JsonElement value)

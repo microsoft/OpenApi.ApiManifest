@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 

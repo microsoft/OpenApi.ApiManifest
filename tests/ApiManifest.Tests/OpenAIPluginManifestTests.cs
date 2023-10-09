@@ -454,23 +454,57 @@ public class OpenAIPluginManifestTests
         Assert.Equal("'NameForModel' is a required property of 'OpenAIPluginManifest'. (Parameter 'NameForModel')", exception.Message);
     }
 
+    [Fact]
+    public void LoadOpenAIPluginManifestWithNoApiUrl()
+    {
+        var json = """
+        {
+            "schema_version": "1.0.0",
+            "name_for_human": "TestOAuth",
+            "name_for_model": "TestOAuthModel",
+            "description_for_human": "SomeHumanDescription",
+            "description_for_model": "SomeModelDescription",
+            "auth": {
+                "type": "service_http",
+                "authorization_type": "bearer",
+                "verification_tokens": {
+                    "openai": "dummy_verification_token"
+                }
+            },
+            "api": {
+                "type": "openapi",
+                "is_user_authenticated": false
+            },
+            "logo_url": "https://avatars.githubusercontent.com/bar",
+            "contact_email": "joe@test.com",
+            "legal_info_url": "https://legalinfo.foobar.com"
+        }
+        """;
+
+        var doc = JsonDocument.Parse(json);
+        var exception = Assert.Throws<ArgumentNullException>(() =>
+        {
+            _ = OpenAIPluginManifest.Load(doc.RootElement);
+        });
+        Assert.Equal("'Url' is a required property of 'Api'. (Parameter 'Url')", exception.Message);
+    }
+
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
-        return OpenApiPluginFactory.CreateOpenAIPluginManifest(
+        var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(
             schemaVersion: "1.0.0",
             nameForHuman: "TestOAuth",
             nameForModel: "TestOAuthModel",
-            descriptionForHuman: "SomeHumanDescription",
-            descriptionForModel: "SomeModelDescription",
-            auth: new ManifestNoAuth(),
-            api: new Api
-            {
-                Type = "openapi",
-                Url = "https://api.openai.com/v1",
-                IsUserAuthenticated = false
-            },
             logoUrl: "https://avatars.githubusercontent.com/bar",
             legalInfoUrl: "https://legalinfo.foobar.com",
             contactEmail: "joe@test.com");
+        manifest.DescriptionForHuman = "SomeHumanDescription";
+        manifest.DescriptionForModel = "SomeModelDescription";
+        manifest.Auth = new ManifestNoAuth();
+        manifest.Api = new Api("openapi", "https://api.openai.com/v1")
+        {
+            IsUserAuthenticated = false
+        };
+        return manifest;
     }
 }
