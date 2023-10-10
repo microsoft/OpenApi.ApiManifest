@@ -1,7 +1,9 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 using System.Text.Json.Nodes;
 
-namespace Tests.ApiManifest;
-
+namespace Microsoft.OpenApi.ApiManifest.Tests;
 public class CreateTests
 {
 
@@ -52,8 +54,10 @@ public class CreateTests
     {
         _ = Assert.Throws<ArgumentException>(() =>
         {
-            var apiDependency = new ApiDependency();
-            apiDependency.ApiDeploymentBaseUrl = apiDeploymentBaseUrl;
+            var apiDependency = new ApiDependency
+            {
+                ApiDeploymentBaseUrl = apiDeploymentBaseUrl
+            };
         }
         );
     }

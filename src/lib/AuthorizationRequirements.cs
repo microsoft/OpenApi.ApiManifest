@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
@@ -5,7 +6,6 @@ namespace Microsoft.OpenApi.ApiManifest;
 public class AuthorizationRequirements
 {
     public string? ClientIdentifier { get; set; }
-    // TODO: Confirm the need for AccessReference property. It is not present in the spec.
     public List<string>? AccessReference { get; set; }
     public List<AccessRequest>? Access { get; set; }
 

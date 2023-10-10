@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -14,7 +17,7 @@ public class Extensions : Dictionary<string, JsonNode?>
         {
             if (property.Value.ValueKind != JsonValueKind.Null)
             {
-                var extensionValue = JsonSerializer.Deserialize<JsonObject>(property.Value.GetRawText());
+                var extensionValue = JsonSerializer.Deserialize<JsonNode>(property.Value.GetRawText());
                 extensions.Add(property.Name, extensionValue);
             }
         }

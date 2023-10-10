@@ -19,7 +19,7 @@
     <Title>API Manifest</Title>
     <AssemblyName>Microsoft.OpenApi.ApiManifest</AssemblyName>
     <RootNamespace>Microsoft.OpenApi.ApiManifest</RootNamespace>
-    <AssemblyOriginatorKeyFile>sgKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\sgKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>

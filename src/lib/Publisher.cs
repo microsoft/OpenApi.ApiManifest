@@ -1,5 +1,5 @@
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Microsoft.OpenApi.ApiManifest;
 
@@ -10,8 +10,6 @@ public class Publisher
 
     private const string NameProperty = "name";
     private const string ContactEmailProperty = "contactEmail";
-
-    private static readonly Regex s_emailRegex = new(@"^[^@\s]+@[^@\s]+$", RegexOptions.Compiled, Constants.DefaultRegexTimeout);
 
     public Publisher(string name, string contactEmail)
     {
@@ -32,10 +30,8 @@ public class Publisher
         Validate(Name, ContactEmail);
 
         writer.WriteStartObject();
-
         writer.WriteString(NameProperty, Name);
         writer.WriteString(ContactEmailProperty, ContactEmail);
-
         writer.WriteEndObject();
     }
 
@@ -47,14 +43,8 @@ public class Publisher
 
     private static void Validate(string? name, string? contactEmail)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentNullException(name, String.Format(ErrorMessage.FieldIsRequired, "name", "publisher"));
-
-        if (string.IsNullOrWhiteSpace(contactEmail))
-            throw new ArgumentNullException(contactEmail, String.Format(ErrorMessage.FieldIsRequired, "contactEmail", "publisher"));
-
-        if (!s_emailRegex.IsMatch(contactEmail))
-            throw new ArgumentException(string.Format(ErrorMessage.FieldIsNotValid, "contactEmail"), contactEmail);
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(name), name, nameof(Publisher));
+        ValidationHelpers.ValidateEmail(nameof(contactEmail), contactEmail, nameof(Publisher));
     }
 
     private static readonly FixedFieldMap<Publisher> handlers = new()
