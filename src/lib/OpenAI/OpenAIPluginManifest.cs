@@ -137,8 +137,8 @@ public class OpenAIPluginManifest
         ValidationHelpers.ValidateLength(nameof(DescriptionForModel), openAIPluginManifest.DescriptionForModel, 8000);
 
         ValidationHelpers.ValidateNullOrWhitespace(nameof(SchemaVersion), openAIPluginManifest.SchemaVersion, nameof(OpenAIPluginManifest));
-        ValidationHelpers.ValidateNullObject(nameof(Auth), openAIPluginManifest.Auth);
-        ValidationHelpers.ValidateNullObject(nameof(Api), openAIPluginManifest.Api);
+        ArgumentNullException.ThrowIfNull(openAIPluginManifest.Auth);
+        ArgumentNullException.ThrowIfNull(openAIPluginManifest.Api);
         ValidationHelpers.ValidateNullOrWhitespace(nameof(LogoUrl), openAIPluginManifest.LogoUrl, nameof(OpenAIPluginManifest));
         ValidationHelpers.ValidateEmail(nameof(ContactEmail), openAIPluginManifest.ContactEmail, nameof(OpenAIPluginManifest));
         ValidationHelpers.ValidateNullOrWhitespace(nameof(LegalInfoUrl), openAIPluginManifest.LegalInfoUrl, nameof(OpenAIPluginManifest));
