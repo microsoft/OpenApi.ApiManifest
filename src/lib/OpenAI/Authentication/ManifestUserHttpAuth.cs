@@ -11,7 +11,8 @@ public class ManifestUserHttpAuth : BaseManifestAuth
     public string? AuthorizationType { get; set; }
     public ManifestUserHttpAuth(string? authorizationType)
     {
-        if (string.IsNullOrWhiteSpace(authorizationType) || (authorizationType != "basic" && authorizationType != "bearer"))
+        if (string.IsNullOrWhiteSpace(authorizationType) ||
+            (!string.Equals(authorizationType, "basic", StringComparison.OrdinalIgnoreCase) && !string.Equals(authorizationType, "bearer", StringComparison.OrdinalIgnoreCase)))
         {
             // Reference: https://platform.openai.com/docs/plugins/authentication/user-level
             throw new ArgumentException($"{nameof(authorizationType)} must be either 'basic' or 'bearer'.");

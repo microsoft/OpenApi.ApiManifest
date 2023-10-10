@@ -10,10 +10,9 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers
                 throw new ArgumentNullException(parameterName, string.Format(ErrorMessage.FieldIsRequired, parameterName, parentName));
         }
 
-        internal static void ValidateNullObject(string parameterName, object? value, string parentName)
+        internal static void ValidateNullObject(string parameterName, object? value)
         {
-            if (value == null)
-                throw new ArgumentNullException(parameterName, string.Format(ErrorMessage.FieldIsRequired, parameterName, parentName));
+            ArgumentNullException.ThrowIfNull(value, parameterName);
         }
 
         internal static void ValidateLength(string parameterName, string? value, int maxLength)
