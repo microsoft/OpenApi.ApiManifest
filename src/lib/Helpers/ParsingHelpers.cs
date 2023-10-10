@@ -44,6 +44,16 @@ internal static class ParsingHelpers
         return map;
     }
 
+    internal static SortedDictionary<string, T> GetOrderedMap<T>(JsonElement v, Func<JsonElement, T> load)
+    {
+        var map = new SortedDictionary<string, T>();
+        foreach (var item in v.EnumerateObject())
+        {
+            map.Add(item.Name, load(item.Value));
+        }
+        return map;
+    }
+
     internal static Dictionary<string, string> GetMapOfString(JsonElement v)
     {
         var map = new Dictionary<string, string>();
@@ -51,16 +61,6 @@ internal static class ParsingHelpers
         {
             var value = item.Value.GetString();
             map.Add(item.Name, string.IsNullOrWhiteSpace(value) ? string.Empty : value);
-        }
-        return map;
-    }
-
-    internal static SortedDictionary<string, T> GetOrderedMap<T>(JsonElement v, Func<JsonElement, T> load)
-    {
-        var map = new SortedDictionary<string, T>();
-        foreach (var item in v.EnumerateObject())
-        {
-            map.Add(item.Name, load(item.Value));
         }
         return map;
     }
