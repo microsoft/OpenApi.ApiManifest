@@ -16,18 +16,16 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <param name="apiDependencyName">The name of apiDependency to use from the provided <see cref="ApiManifestDocument.ApiDependencies"/>. The method defaults to the first apiDependency in  <see cref="ApiManifestDocument.ApiDependencies"/> if no value is provided.</param>
         /// <param name="openApiFilePath">The relative path to where the OpenAPI file that's packaged with the plugin manifest if stored. The method default './openapi.json' if none is provided.</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        /// <exception cref="ArgumentException"></exception>
+        /// <returns>A <see cref="Task{OpenAIPluginManifest}"/></returns>
         public static async Task<OpenAIPluginManifest> ToOpenAIPluginManifestAsync(this ApiManifestDocument apiManifestDocument, string logoUrl, string legalInfoUrl, string? apiDependencyName = default, string openApiFilePath = "./openapi.json", CancellationToken cancellationToken = default)
         {
-            if (!TryGetApiDependency(apiManifestDocument, apiDependencyName, out ApiDependency? apiDependency))
+            if (!TryGetApiDependency(apiManifestDocument.ApiDependencies, apiDependencyName, out ApiDependency? apiDependency))
             {
-                throw new Exception("Failed to get a valid apiDependency from the provided apiManifestDocument");
+                throw new ArgumentException("Failed to get a valid apiDependency from the provided apiManifestDocument", nameof(apiManifestDocument.ApiDependencies));
             }
             else if (string.IsNullOrWhiteSpace(apiDependency?.ApiDescriptionUrl))
             {
-                throw new ArgumentException("ApiDescriptionUrl is missing in the provided apiManifestDocument. The property is required generate a complete OpenAI Plugin manifest.");
+                throw new ArgumentNullException(nameof(apiDependency.ApiDescriptionUrl), "ApiDescriptionUrl is missing in the provided apiManifestDocument. The property is required generate a complete OpenAI Plugin manifest.");
             }
             else
             {
@@ -40,7 +38,8 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
 
         internal static OpenAIPluginManifest ToOpenAIPluginManifest(this ApiManifestDocument apiManifestDocument, OpenApiDocument openApiDocument, string logoUrl, string legalInfoUrl, string openApiFilePath)
         {
-            // apiManifestDocument.Validate(); // TODO: Validate the ApiManifestDocument before generating the OpenAI manifest.
+            // Validate the ApiManifestDocument before generating the OpenAI manifest.
+            apiManifestDocument.Validate();
             string contactEmail = string.IsNullOrWhiteSpace(apiManifestDocument.Publisher?.ContactEmail) ? string.Empty : apiManifestDocument.Publisher.ContactEmail;
 
             var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(
@@ -59,12 +58,12 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             return openApiManifest;
         }
 
-        private static bool TryGetApiDependency(ApiManifestDocument apiManifestDocument, string? apiDependencyName, out ApiDependency? apiDependency)
+        private static bool TryGetApiDependency(ApiDependencies apiDependencies, string? apiDependencyName, out ApiDependency? apiDependency)
         {
             if (apiDependencyName == default)
-                apiDependency = apiManifestDocument.ApiDependencies.FirstOrDefault().Value;
+                apiDependency = apiDependencies.FirstOrDefault().Value;
             else
-                _ = apiManifestDocument.ApiDependencies.TryGetValue(apiDependencyName, out apiDependency);
+                _ = apiDependencies.TryGetValue(apiDependencyName, out apiDependency);
             return apiDependency != null;
         }
     }

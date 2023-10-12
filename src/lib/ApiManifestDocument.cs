@@ -17,33 +17,27 @@ public class ApiManifestDocument
 
     public ApiManifestDocument(string applicationName)
     {
-        Validate(applicationName);
-
         ApplicationName = applicationName;
+        Validate();
     }
 
     public ApiManifestDocument(JsonElement value)
     {
         ParsingHelpers.ParseMap(value, this, handlers);
-
-        Validate(ApplicationName);
+        Validate();
     }
 
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
-        Validate(ApplicationName);
-
+        Validate();
         writer.WriteStartObject();
-
         writer.WriteString(ApplicationNameProperty, ApplicationName);
-
         if (Publisher != null)
         {
             writer.WritePropertyName(PublisherProperty);
             Publisher.Write(writer);
         }
-
         if (ApiDependencies.Any())
         {
             writer.WritePropertyName(ApiDependenciesProperty);
@@ -55,13 +49,11 @@ public class ApiManifestDocument
             }
             writer.WriteEndObject();
         }
-
         if (Extensions.Any())
         {
             writer.WritePropertyName(ExtensionsProperty);
             Extensions.Write(writer);
         }
-
         writer.WriteEndObject();
     }
 
@@ -71,9 +63,10 @@ public class ApiManifestDocument
         return new ApiManifestDocument(value);
     }
 
-    private static void Validate(string? applicationName)
+    internal void Validate()
     {
-        ValidationHelpers.ValidateNullOrWhitespace(nameof(applicationName), applicationName, nameof(ApiManifestDocument));
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(ApplicationName), ApplicationName, nameof(ApiManifestDocument));
+        Publisher?.Validate();
     }
 
     // Create fixed field map for ApiManifest
