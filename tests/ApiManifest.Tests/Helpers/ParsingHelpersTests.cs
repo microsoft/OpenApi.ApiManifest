@@ -112,5 +112,14 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
             var kvPairs = ParsingHelpers.ParseKey(exampleKeyValuePair);
             Assert.Equal(3, kvPairs.Count());
         }
+
+        [Fact]
+        public async Task ParseOpenApiAsync()
+        {
+            var openApiUrl = "https://raw.githubusercontent.com/APIPatterns/Moostodon/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
+            var results = await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None);
+            Assert.Empty(results.OpenApiDiagnostic.Errors);
+            Assert.NotNull(results.OpenApiDocument);
+        }
     }
 }

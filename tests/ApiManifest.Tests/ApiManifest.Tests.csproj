@@ -33,4 +33,10 @@
     <ProjectReference Include="..\..\src\lib\apimanifest.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestFiles\exampleApiManifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

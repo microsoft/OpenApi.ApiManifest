@@ -1,7 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.Readers;
 using System.Diagnostics;
+using System.Net;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Helpers;
@@ -134,6 +136,41 @@ internal static class ParsingHelpers
 
             var keyValue = new KeyValuePair<string, string>(pair[..index], pair[(index + 1)..]);
             yield return keyValue;
+        }
+    }
+
+    internal static async Task<ReadResult> ParseOpenApiAsync(string openApiFileUrl, bool inlineExternal, CancellationToken cancellationToken)
+    {
+        Stream stream = await GetStreamAsync(openApiFileUrl, cancellationToken);
+        ReadResult result = await new OpenApiStreamReader(new OpenApiReaderSettings
+        {
+            LoadExternalRefs = inlineExternal,
+            BaseUrl = new Uri(openApiFileUrl)
+        }
+        ).ReadAsync(stream, cancellationToken);
+
+        return result;
+    }
+
+    private static async Task<Stream> GetStreamAsync(string input, CancellationToken cancellationToken = default)
+    {
+        if (!input.StartsWith("http"))
+            throw new ArgumentException($"The input {input} is not a valid url", nameof(input));
+        try
+        {
+            var httpClientHandler = new HttpClientHandler()
+            {
+                SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+            };
+            using var httpClient = new HttpClient(httpClientHandler)
+            {
+                DefaultRequestVersion = HttpVersion.Version20
+            };
+            return await httpClient.GetStreamAsync(input, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Could not download the file at {input}", ex);
         }
     }
 }

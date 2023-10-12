@@ -3,6 +3,7 @@
 
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
+using Microsoft.OpenApi.ApiManifest.TypeExtensions;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Tests;
@@ -489,6 +490,46 @@ public class OpenAIPluginManifestTests
         Assert.Equal("'Url' is a required property of 'Api'. (Parameter 'Url')", exception.Message);
     }
 
+    [Fact]
+    public async Task GenerateOpenAIPluginManifestFromApiManifestAsync()
+    {
+        var apiManifest = await LoadTestApiManifestDocumentAsync();
+        var openAiPluginManifest = await apiManifest.ToOpenAIPluginManifestAsync(logoUrl: "https://avatars.githubusercontent.com/bar", legalInfoUrl: "https://legalinfo.foobar.com");
+
+        Assert.Equal("1.0.0", openAiPluginManifest.SchemaVersion);
+        Assert.Equal("Mastodon", openAiPluginManifest.NameForHuman);
+        Assert.Equal("Mastodon", openAiPluginManifest.NameForModel);
+        Assert.Equal("Description for Mastodon.", openAiPluginManifest.DescriptionForHuman);
+        Assert.Equal("Description for Mastodon.", openAiPluginManifest.DescriptionForModel);
+        _ = Assert.IsType<ManifestNoAuth>(openAiPluginManifest.Auth);
+        Assert.Equal("openapi", openAiPluginManifest.Api?.Type);
+        Assert.Equal("./openapi.json", openAiPluginManifest.Api?.Url);
+        Assert.Equal("https://avatars.githubusercontent.com/bar", openAiPluginManifest.LogoUrl);
+        Assert.Equal("https://legalinfo.foobar.com", openAiPluginManifest.LegalInfoUrl);
+    }
+
+    [Fact]
+    public async Task GenerateOpenAIPluginManifestFromApiManifestOfAnApiDependencyAsync()
+    {
+        var apiManifest = await LoadTestApiManifestDocumentAsync();
+        var openAiPluginManifest = await apiManifest.ToOpenAIPluginManifestAsync(
+            logoUrl: "https://avatars.githubusercontent.com/bar",
+            legalInfoUrl: "https://legalinfo.foobar.com",
+            apiDependencyName: "MicrosoftGraph",
+            openApiFilePath: "./openapi.yml");
+
+        Assert.Equal("v1.0", openAiPluginManifest.SchemaVersion);
+        Assert.Equal("DirectoryObjects", openAiPluginManifest.NameForHuman);
+        Assert.Equal("DirectoryObjects", openAiPluginManifest.NameForModel);
+        Assert.Equal("Description for DirectoryObjects.", openAiPluginManifest.DescriptionForHuman);
+        Assert.Equal("Description for DirectoryObjects.", openAiPluginManifest.DescriptionForModel);
+        _ = Assert.IsType<ManifestNoAuth>(openAiPluginManifest.Auth);
+        Assert.Equal("openapi", openAiPluginManifest.Api?.Type);
+        Assert.Equal("./openapi.yml", openAiPluginManifest.Api?.Url);
+        Assert.Equal("https://avatars.githubusercontent.com/bar", openAiPluginManifest.LogoUrl);
+        Assert.Equal("https://legalinfo.foobar.com", openAiPluginManifest.LegalInfoUrl);
+    }
+
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
         var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(
@@ -506,5 +547,13 @@ public class OpenAIPluginManifestTests
             IsUserAuthenticated = false
         };
         return manifest;
+    }
+
+    private static async Task<ApiManifestDocument> LoadTestApiManifestDocumentAsync()
+    {
+        var manifestPath = Path.Combine(".", "TestFiles", "exampleApiManifest.json");
+        FileStream stream = new(path: manifestPath, mode: FileMode.Open);
+        var jsonDocument = await JsonDocument.ParseAsync(stream);
+        return ApiManifestDocument.Load(jsonDocument.RootElement);
     }
 }

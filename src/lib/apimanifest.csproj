@@ -22,4 +22,8 @@
     <AssemblyOriginatorKeyFile>..\sgKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.6.9" />
+  </ItemGroup>
+
 </Project>
