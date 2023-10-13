@@ -35,6 +35,7 @@ public class AuthorizationRequirements
     // Write Method
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
 
         if (!String.IsNullOrWhiteSpace(ClientIdentifier)) writer.WriteString(ClientIdentifierProperty, ClientIdentifier);

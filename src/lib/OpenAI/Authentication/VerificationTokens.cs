@@ -19,6 +19,7 @@ public class VerificationTokens : Dictionary<string, string>
 
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
         foreach (var verificationToken in this)
         {

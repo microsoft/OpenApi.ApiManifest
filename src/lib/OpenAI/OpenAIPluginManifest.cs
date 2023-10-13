@@ -86,6 +86,7 @@ public class OpenAIPluginManifest
     //Write method
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         Validate(this);
         writer.WriteStartObject();
         writer.WriteString(SchemaVersionProperty, SchemaVersion);

@@ -16,12 +16,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SignAssembly>True</SignAssembly>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>All</AnalysisMode>
     <Title>API Manifest</Title>
     <AssemblyName>Microsoft.OpenApi.ApiManifest</AssemblyName>
     <RootNamespace>Microsoft.OpenApi.ApiManifest</RootNamespace>
     <AssemblyOriginatorKeyFile>..\sgKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>All</AnalysisMode>
+    <NoWarn>$(NoWarn);CS8785;NU5048;NU5104;CA1724;CA1055;CA1848;CA1308;CA1822</NoWarn>
   </PropertyGroup>
 
 </Project>

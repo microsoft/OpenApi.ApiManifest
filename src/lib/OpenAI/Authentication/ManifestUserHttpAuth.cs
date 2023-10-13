@@ -30,6 +30,7 @@ public class ManifestUserHttpAuth : BaseManifestAuth
 
     public override void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
         WriteProperties(writer);
         writer.WriteString(AuthorizationTypeProperty, AuthorizationType);
