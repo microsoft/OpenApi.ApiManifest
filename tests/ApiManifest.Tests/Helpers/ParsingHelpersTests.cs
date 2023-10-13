@@ -121,5 +121,19 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
             Assert.Empty(results.OpenApiDiagnostic.Errors);
             Assert.NotNull(results.OpenApiDocument);
         }
+
+        [Fact]
+        public void ParseOpenApiWithWrongOpenApiUrl()
+        {
+            var openApiUrl = "https://contoso.com/APIPatterns/Contoso/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
+            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None));
+        }
+
+        [Fact]
+        public void ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
+        {
+            var openApiUrl = "contoso.com/APIPatterns/Contoso/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
+            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None));
+        }
     }
 }

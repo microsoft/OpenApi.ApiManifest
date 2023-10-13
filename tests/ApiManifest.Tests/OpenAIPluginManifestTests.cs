@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.ApiManifest.Exceptions;
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 using Microsoft.OpenApi.ApiManifest.TypeExtensions;
@@ -10,6 +11,11 @@ namespace Microsoft.OpenApi.ApiManifest.Tests;
 
 public class OpenAIPluginManifestTests
 {
+    private readonly ApiManifestDocument exampleApiManifest;
+    public OpenAIPluginManifestTests()
+    {
+        exampleApiManifest = LoadTestApiManifestDocument();
+    }
     // With no auth.
     [Fact]
     public void LoadOpenAIPluginManifestWithNoAuth()
@@ -493,8 +499,7 @@ public class OpenAIPluginManifestTests
     [Fact]
     public async Task GenerateOpenAIPluginManifestFromApiManifestAsync()
     {
-        var apiManifest = await LoadTestApiManifestDocumentAsync();
-        var openAiPluginManifest = await apiManifest.ToOpenAIPluginManifestAsync(logoUrl: "https://avatars.githubusercontent.com/bar", legalInfoUrl: "https://legalinfo.foobar.com");
+        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync(logoUrl: "https://avatars.githubusercontent.com/bar", legalInfoUrl: "https://legalinfo.foobar.com");
 
         Assert.Equal("1.0.0", openAiPluginManifest.SchemaVersion);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForHuman);
@@ -511,8 +516,7 @@ public class OpenAIPluginManifestTests
     [Fact]
     public async Task GenerateOpenAIPluginManifestFromApiManifestOfAnApiDependencyAsync()
     {
-        var apiManifest = await LoadTestApiManifestDocumentAsync();
-        var openAiPluginManifest = await apiManifest.ToOpenAIPluginManifestAsync(
+        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync(
             logoUrl: "https://avatars.githubusercontent.com/bar",
             legalInfoUrl: "https://legalinfo.foobar.com",
             apiDependencyName: "MicrosoftGraph",
@@ -528,6 +532,29 @@ public class OpenAIPluginManifestTests
         Assert.Equal("./openapi.yml", openAiPluginManifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", openAiPluginManifest.LogoUrl);
         Assert.Equal("https://legalinfo.foobar.com", openAiPluginManifest.LegalInfoUrl);
+    }
+
+    [Fact]
+    public void GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependency()
+    {
+        _ = Assert.ThrowsAsync<ApiManifestException>(async () => await exampleApiManifest.ToOpenAIPluginManifestAsync(
+            logoUrl: "https://avatars.githubusercontent.com/bar",
+            legalInfoUrl: "https://legalinfo.foobar.com",
+            apiDependencyName: "ContosoApi",
+            openApiFilePath: "./openapi.yml"));
+    }
+
+    [Fact]
+    public void GenerateOpenAIPluginManifestFromApiManifestWithEmptyApiDependencies()
+    {
+        var apiManifest = LoadTestApiManifestDocument();
+        apiManifest.ApiDependencies.Clear();
+
+        _ = Assert.ThrowsAsync<ApiManifestException>(async () => await apiManifest.ToOpenAIPluginManifestAsync(
+            logoUrl: "https://avatars.githubusercontent.com/bar",
+            legalInfoUrl: "https://legalinfo.foobar.com",
+            apiDependencyName: "MicrosoftGraph",
+            openApiFilePath: "./openapi.yml"));
     }
 
     private static OpenAIPluginManifest CreateManifestPlugIn()
@@ -549,11 +576,10 @@ public class OpenAIPluginManifestTests
         return manifest;
     }
 
-    private static async Task<ApiManifestDocument> LoadTestApiManifestDocumentAsync()
+    private static ApiManifestDocument LoadTestApiManifestDocument()
     {
         var manifestPath = Path.Combine(".", "TestFiles", "exampleApiManifest.json");
-        FileStream stream = new(path: manifestPath, mode: FileMode.Open);
-        var jsonDocument = await JsonDocument.ParseAsync(stream);
+        using var jsonDocument = JsonDocument.Parse(File.ReadAllText(manifestPath));
         return ApiManifestDocument.Load(jsonDocument.RootElement);
     }
 }
