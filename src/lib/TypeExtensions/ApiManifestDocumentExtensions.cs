@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.ApiManifest.Helpers;
+﻿using Microsoft.OpenApi.ApiManifest.Exceptions;
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 using Microsoft.OpenApi.Models;
@@ -21,18 +22,16 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         {
             if (!TryGetApiDependency(apiManifestDocument.ApiDependencies, apiDependencyName, out ApiDependency? apiDependency))
             {
-                throw new ArgumentException("Failed to get a valid apiDependency from the provided apiManifestDocument", nameof(apiManifestDocument.ApiDependencies));
+                throw new ApiManifestException(string.Format(ErrorMessage.ApiDependencyNotFound, nameof(OpenAIPluginManifest)));
             }
             else if (string.IsNullOrWhiteSpace(apiDependency?.ApiDescriptionUrl))
             {
-                throw new ArgumentNullException(nameof(apiDependency.ApiDescriptionUrl), "ApiDescriptionUrl is missing in the provided apiManifestDocument. The property is required generate a complete OpenAI Plugin manifest.");
+                throw new ApiManifestException(string.Format(ErrorMessage.ApiDescriptionUrlNotFound, nameof(OpenAIPluginManifest)));
             }
             else
             {
                 var result = await ParsingHelpers.ParseOpenApiAsync(apiDependency.ApiDescriptionUrl, false, cancellationToken);
-                OpenApiDocument document = result.OpenApiDocument;
-
-                return apiManifestDocument.ToOpenAIPluginManifest(openApiDocument: document, logoUrl: logoUrl, legalInfoUrl: legalInfoUrl, openApiFilePath: openApiFilePath);
+                return apiManifestDocument.ToOpenAIPluginManifest(openApiDocument: result.OpenApiDocument, logoUrl: logoUrl, legalInfoUrl: legalInfoUrl, openApiFilePath: openApiFilePath);
             }
         }
 
