@@ -499,7 +499,7 @@ public class OpenAIPluginManifestTests
     [Fact]
     public async Task GenerateOpenAIPluginManifestFromApiManifestAsync()
     {
-        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync(logoUrl: "https://avatars.githubusercontent.com/bar", legalInfoUrl: "https://legalinfo.foobar.com");
+        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com");
 
         Assert.Equal("1.0.0", openAiPluginManifest.SchemaVersion);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForHuman);
@@ -508,7 +508,7 @@ public class OpenAIPluginManifestTests
         Assert.Equal("Description for Mastodon.", openAiPluginManifest.DescriptionForModel);
         _ = Assert.IsType<ManifestNoAuth>(openAiPluginManifest.Auth);
         Assert.Equal("openapi", openAiPluginManifest.Api?.Type);
-        Assert.Equal("./openapi.json", openAiPluginManifest.Api?.Url);
+        Assert.Equal(exampleApiManifest.ApiDependencies.FirstOrDefault().Value.ApiDescriptionUrl, openAiPluginManifest.Api?.Url);
         Assert.Equal("https://avatars.githubusercontent.com/bar", openAiPluginManifest.LogoUrl);
         Assert.Equal("https://legalinfo.foobar.com", openAiPluginManifest.LegalInfoUrl);
     }
@@ -516,11 +516,7 @@ public class OpenAIPluginManifestTests
     [Fact]
     public async Task GenerateOpenAIPluginManifestFromApiManifestOfAnApiDependencyAsync()
     {
-        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync(
-            logoUrl: "https://avatars.githubusercontent.com/bar",
-            legalInfoUrl: "https://legalinfo.foobar.com",
-            apiDependencyName: "MicrosoftGraph",
-            openApiFilePath: "./openapi.yml");
+        var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml");
 
         Assert.Equal("v1.0", openAiPluginManifest.SchemaVersion);
         Assert.Equal("DirectoryObjects", openAiPluginManifest.NameForHuman);
@@ -537,11 +533,8 @@ public class OpenAIPluginManifestTests
     [Fact]
     public void GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependency()
     {
-        _ = Assert.ThrowsAsync<ApiManifestException>(async () => await exampleApiManifest.ToOpenAIPluginManifestAsync(
-            logoUrl: "https://avatars.githubusercontent.com/bar",
-            legalInfoUrl: "https://legalinfo.foobar.com",
-            apiDependencyName: "ContosoApi",
-            openApiFilePath: "./openapi.yml"));
+        _ = Assert.ThrowsAsync<ApiManifestException>(
+            async () => await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "ContosoApi", "./openapi.yml"));
     }
 
     [Fact]
@@ -550,22 +543,13 @@ public class OpenAIPluginManifestTests
         var apiManifest = LoadTestApiManifestDocument();
         apiManifest.ApiDependencies.Clear();
 
-        _ = Assert.ThrowsAsync<ApiManifestException>(async () => await apiManifest.ToOpenAIPluginManifestAsync(
-            logoUrl: "https://avatars.githubusercontent.com/bar",
-            legalInfoUrl: "https://legalinfo.foobar.com",
-            apiDependencyName: "MicrosoftGraph",
-            openApiFilePath: "./openapi.yml"));
+        _ = Assert.ThrowsAsync<ApiManifestException>(
+            async () => await apiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml"));
     }
 
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
-        var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(
-            schemaVersion: "1.0.0",
-            nameForHuman: "TestOAuth",
-            nameForModel: "TestOAuthModel",
-            logoUrl: "https://avatars.githubusercontent.com/bar",
-            legalInfoUrl: "https://legalinfo.foobar.com",
-            contactEmail: "joe@test.com");
+        var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest("TestOAuthModel", "TestOAuth", "https://avatars.githubusercontent.com/bar", "joe@test.com", "https://legalinfo.foobar.com", "1.0.0");
         manifest.DescriptionForHuman = "SomeHumanDescription";
         manifest.DescriptionForModel = "SomeModelDescription";
         manifest.Auth = new ManifestNoAuth();

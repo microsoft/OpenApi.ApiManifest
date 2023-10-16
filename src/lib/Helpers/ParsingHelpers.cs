@@ -139,38 +139,43 @@ internal static class ParsingHelpers
         }
     }
 
-    internal static async Task<ReadResult> ParseOpenApiAsync(string openApiFileUrl, bool inlineExternal, CancellationToken cancellationToken)
+    internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        Stream stream = await GetStreamAsync(openApiFileUrl, cancellationToken);
+        Stream stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken);
+        return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken);
+    }
+
+    internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
+    {
         ReadResult result = await new OpenApiStreamReader(new OpenApiReaderSettings
         {
             LoadExternalRefs = inlineExternal,
-            BaseUrl = new Uri(openApiFileUrl)
+            BaseUrl = openApiFileUri
         }
         ).ReadAsync(stream, cancellationToken);
 
         return result;
     }
 
-    private static async Task<Stream> GetStreamAsync(string input, CancellationToken cancellationToken = default)
+    internal static async Task<Stream> GetStreamAsync(Uri uri, HttpMessageHandler? finalHandler = null, CancellationToken cancellationToken = default)
     {
-        if (!input.StartsWith("http"))
-            throw new ArgumentException($"The input {input} is not a valid url", nameof(input));
+        if (!uri.Scheme.StartsWith("http"))
+            throw new ArgumentException($"The input {uri} is not a valid url", nameof(uri));
         try
         {
-            var httpClientHandler = new HttpClientHandler()
+            finalHandler ??= new HttpClientHandler()
             {
                 SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
             };
-            using var httpClient = new HttpClient(httpClientHandler)
+            using var httpClient = new HttpClient(finalHandler)
             {
                 DefaultRequestVersion = HttpVersion.Version20
             };
-            return await httpClient.GetStreamAsync(input, cancellationToken);
+            return await httpClient.GetStreamAsync(uri, cancellationToken);
         }
         catch (HttpRequestException ex)
         {
-            throw new InvalidOperationException($"Could not download the file at {input}", ex);
+            throw new InvalidOperationException($"Could not download the file at {uri}", ex);
         }
     }
 }

@@ -2,6 +2,10 @@
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.Helpers;
+using Moq;
+using Moq.Protected;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
@@ -116,8 +120,12 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
         [Fact]
         public async Task ParseOpenApiAsync()
         {
-            var openApiUrl = "https://raw.githubusercontent.com/APIPatterns/Moostodon/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
-            var results = await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None);
+            var testOpenApiFilePath = Path.Combine(".", "TestFiles", "testOpenApi.yaml");
+            var mockHandler = MockHttpResponse(File.ReadAllText(testOpenApiFilePath));
+
+            var openApiUri = new Uri("https://contoso.com/openapi.yaml");
+            var stream = await ParsingHelpers.GetStreamAsync(openApiUri, mockHandler, CancellationToken.None);
+            var results = await ParsingHelpers.ParseOpenApiAsync(stream, openApiUri, false, CancellationToken.None);
             Assert.Empty(results.OpenApiDiagnostic.Errors);
             Assert.NotNull(results.OpenApiDocument);
         }
@@ -125,15 +133,31 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
         [Fact]
         public void ParseOpenApiWithWrongOpenApiUrl()
         {
-            var openApiUrl = "https://contoso.com/APIPatterns/Contoso/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
-            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None));
+            var openApiUri = new Uri("https://contoso.com/NotValid.yaml");
+            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
 
         [Fact]
         public void ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
         {
-            var openApiUrl = "contoso.com/APIPatterns/Contoso/main/spec/tsp-output/%40typespec/openapi3/openapi.yaml";
-            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUrl, false, CancellationToken.None));
+            var openApiUri = new Uri("xyx://contoso.com/openapi.yaml");
+            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+        }
+
+        private static DelegatingHandler MockHttpResponse(string responseContent)
+        {
+            var mockResponse = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(responseContent) };
+            mockResponse.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var mockHandler = new Mock<DelegatingHandler>();
+            _ = mockHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .Returns(Task.FromResult(mockResponse));
+            return mockHandler.Object;
         }
     }
 }
