@@ -10,18 +10,13 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers;
 
 internal static class ParsingHelpers
 {
-    private static readonly Lazy<HttpClient> s_httpClient;
-
-    static ParsingHelpers()
+    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient(new HttpClientHandler()
     {
-        s_httpClient = new(() => new HttpClient(new HttpClientHandler()
-        {
-            SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-        }))
-        {
-            Value = { DefaultRequestVersion = HttpVersion.Version20 }
-        };
-    }
+        SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+    }))
+    {
+        Value = { DefaultRequestVersion = HttpVersion.Version20 }
+    };
 
     internal static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
