@@ -10,6 +10,19 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers;
 
 internal static class ParsingHelpers
 {
+    private static readonly Lazy<HttpClient> s_httpClient;
+
+    static ParsingHelpers()
+    {
+        s_httpClient = new(() => new HttpClient(new HttpClientHandler()
+        {
+            SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+        }))
+        {
+            Value = { DefaultRequestVersion = HttpVersion.Version20 }
+        };
+    }
+
     internal static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
         foreach (var element in node.EnumerateObject())
@@ -141,7 +154,7 @@ internal static class ParsingHelpers
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        Stream stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken);
+        await using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
         return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken);
     }
 
@@ -152,26 +165,18 @@ internal static class ParsingHelpers
             LoadExternalRefs = inlineExternal,
             BaseUrl = openApiFileUri
         }
-        ).ReadAsync(stream, cancellationToken);
+        ).ReadAsync(stream, cancellationToken).ConfigureAwait(false);
 
         return result;
     }
 
-    internal static async Task<Stream> GetStreamAsync(Uri uri, HttpMessageHandler? finalHandler = null, CancellationToken cancellationToken = default)
+    internal static async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken = default)
     {
-        if (!uri.Scheme.StartsWith("http"))
+        if (!uri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException($"The input {uri} is not a valid url", nameof(uri));
         try
         {
-            finalHandler ??= new HttpClientHandler()
-            {
-                SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-            };
-            using var httpClient = new HttpClient(finalHandler)
-            {
-                DefaultRequestVersion = HttpVersion.Version20
-            };
-            return await httpClient.GetStreamAsync(uri, cancellationToken);
+            return await s_httpClient.Value.GetStreamAsync(uri, cancellationToken).ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
         {

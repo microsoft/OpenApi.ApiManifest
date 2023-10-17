@@ -30,7 +30,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             }
             else
             {
-                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency.ApiDescriptionUrl), false, cancellationToken);
+                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
                 return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath ?? apiDependency.ApiDescriptionUrl);
             }
         }
@@ -59,6 +59,13 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             return openApiManifest;
         }
 
+        /// <summary>
+        /// Tries to get an <see cref="ApiDependency"/> from the provided <see cref="ApiDependencies"/>.
+        /// </summary>
+        /// <param name="apiDependencies">The <see cref="ApiDependencies"/> to search for the apiDependency.</param>
+        /// <param name="apiDependencyName">The name of apiDependency to use from the provided <see cref="ApiManifestDocument.ApiDependencies"/>. The method defaults to the first apiDependency in <see cref="ApiManifestDocument.ApiDependencies"/> if no value is provided.</param>
+        /// <param name="apiDependency">The <see cref="ApiDependency"/> that was found.</param>
+        /// <returns>Returns true if the apiDependency is found and not null, otherwise false.</returns>
         private static bool TryGetApiDependency(ApiDependencies apiDependencies, string? apiDependencyName, out ApiDependency? apiDependency)
         {
             if (apiDependencyName == default)
