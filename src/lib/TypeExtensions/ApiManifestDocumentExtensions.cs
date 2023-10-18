@@ -68,7 +68,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>Returns true if the apiDependency is found and not null, otherwise false.</returns>
         private static bool TryGetApiDependency(ApiDependencies apiDependencies, string? apiDependencyName, out ApiDependency? apiDependency)
         {
-            if (apiDependencyName == default)
+            if (string.IsNullOrEmpty(apiDependencyName))
                 apiDependency = apiDependencies.FirstOrDefault().Value;
             else
                 _ = apiDependencies.TryGetValue(apiDependencyName, out apiDependency);

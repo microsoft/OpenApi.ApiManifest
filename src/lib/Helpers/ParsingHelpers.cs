@@ -150,7 +150,7 @@ internal static class ParsingHelpers
     internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
         await using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
-        return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken);
+        return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken).ConfigureAwait(false);
     }
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
