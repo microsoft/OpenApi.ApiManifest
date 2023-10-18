@@ -1,13 +1,23 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.Readers;
 using System.Diagnostics;
+using System.Net;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Helpers;
 
 internal static class ParsingHelpers
 {
+    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient(new HttpClientHandler()
+    {
+        SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
+    }))
+    {
+        Value = { DefaultRequestVersion = HttpVersion.Version20 }
+    };
+
     internal static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
         foreach (var element in node.EnumerateObject())
@@ -134,6 +144,38 @@ internal static class ParsingHelpers
 
             var keyValue = new KeyValuePair<string, string>(pair[..index], pair[(index + 1)..]);
             yield return keyValue;
+        }
+    }
+
+    internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
+    {
+        await using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken).ConfigureAwait(false);
+    }
+
+    internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
+    {
+        ReadResult result = await new OpenApiStreamReader(new OpenApiReaderSettings
+        {
+            LoadExternalRefs = inlineExternal,
+            BaseUrl = openApiFileUri
+        }
+        ).ReadAsync(stream, cancellationToken).ConfigureAwait(false);
+
+        return result;
+    }
+
+    internal static async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken = default)
+    {
+        if (!uri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException($"The input {uri} is not a valid url", nameof(uri));
+        try
+        {
+            return await s_httpClient.Value.GetStreamAsync(uri, cancellationToken).ConfigureAwait(false);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new InvalidOperationException($"Could not download the file at {uri}", ex);
         }
     }
 }

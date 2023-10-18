@@ -13,22 +13,20 @@ public class Publisher
 
     public Publisher(string name, string contactEmail)
     {
-        Validate(name, contactEmail);
-
         Name = name;
         ContactEmail = contactEmail;
+        Validate();
     }
     private Publisher(JsonElement value)
     {
         ParsingHelpers.ParseMap(value, this, handlers);
-        Validate(Name, ContactEmail);
+        Validate();
     }
 
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
-        Validate(Name, ContactEmail);
-
+        Validate();
         writer.WriteStartObject();
         writer.WriteString(NameProperty, Name);
         writer.WriteString(ContactEmailProperty, ContactEmail);
@@ -41,10 +39,10 @@ public class Publisher
         return new Publisher(value);
     }
 
-    private static void Validate(string? name, string? contactEmail)
+    internal void Validate()
     {
-        ValidationHelpers.ValidateNullOrWhitespace(nameof(name), name, nameof(Publisher));
-        ValidationHelpers.ValidateEmail(nameof(contactEmail), contactEmail, nameof(Publisher));
+        ValidationHelpers.ValidateNullOrWhitespace(nameof(Name), Name, nameof(Publisher));
+        ValidationHelpers.ValidateEmail(nameof(ContactEmail), ContactEmail, nameof(Publisher));
     }
 
     private static readonly FixedFieldMap<Publisher> handlers = new()
