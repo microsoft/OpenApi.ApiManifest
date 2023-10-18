@@ -112,5 +112,29 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
             var kvPairs = ParsingHelpers.ParseKey(exampleKeyValuePair);
             Assert.Equal(3, kvPairs.Count());
         }
+
+        [Fact]
+        public async Task ParseOpenApiAsync()
+        {
+            var testOpenApiFilePath = Path.Combine(".", "TestFiles", "testOpenApi.yaml");
+            using var stream = File.OpenRead(testOpenApiFilePath);
+            var results = await ParsingHelpers.ParseOpenApiAsync(stream, new Uri("https://contoso.com/openapi.yaml"), false, CancellationToken.None);
+            Assert.Empty(results.OpenApiDiagnostic.Errors);
+            Assert.NotNull(results.OpenApiDocument);
+        }
+
+        [Fact]
+        public void ParseOpenApiWithWrongOpenApiUrl()
+        {
+            var openApiUri = new Uri("https://contoso.com/NotValid.yaml");
+            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+        }
+
+        [Fact]
+        public void ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
+        {
+            var openApiUri = new Uri("xyx://contoso.com/openapi.yaml");
+            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+        }
     }
 }

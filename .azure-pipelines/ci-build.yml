@@ -84,7 +84,7 @@ stages:
         displayName: 'Run CredScan - Test'
         inputs:
           toolMajorVersion: 'V2'
-          scanFolder: '$(Build.SourcesDirectory)\src\tests'
+          scanFolder: '$(Build.SourcesDirectory)\tests'
           debugMode: false
 
       - task: AntiMalware@3
