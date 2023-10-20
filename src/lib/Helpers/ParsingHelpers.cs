@@ -10,10 +10,8 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers;
 
 internal static class ParsingHelpers
 {
-    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient(new HttpClientHandler()
-    {
-        SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-    }))
+    // The HttpClient will default to SslProtocol of none. This lets the OS pick an appropriate SSL protocol.
+    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient())
     {
         Value = { DefaultRequestVersion = HttpVersion.Version20 }
     };
@@ -138,7 +136,7 @@ internal static class ParsingHelpers
             if (string.IsNullOrEmpty(pair))
                 continue;
 
-            var index = pair.IndexOf('=');
+            var index = pair.IndexOf('=', StringComparison.OrdinalIgnoreCase);
             if (index == -1)
                 throw new InvalidOperationException($"Unable to parse: {key}. Format is name1=value1;name2=value2;...");
 
@@ -149,7 +147,7 @@ internal static class ParsingHelpers
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        await using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
         return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken).ConfigureAwait(false);
     }
 

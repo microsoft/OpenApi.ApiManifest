@@ -25,7 +25,7 @@
   <PropertyGroup>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisMode>All</AnalysisMode>
-    <NoWarn>$(NoWarn);CS8785;NU5048;NU5104;CA1724;CA1055;CA1848;CA1308;CA1822</NoWarn>
+    <NoWarn>$(NoWarn);CS8785;NU5048;NU5104;CA1724;CA1055;CA1848;CA1308;CA1822;CA2227;CA1056;CA1054</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

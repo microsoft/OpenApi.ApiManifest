@@ -187,7 +187,7 @@ public class BasicTests
                     AuthorizationRequirements = new()
                     {
                         ClientIdentifier = "1234",
-                        Access = new() {
+                        Access = new List<AccessRequest>() {
                             new() { Type = "application", Content = new JsonObject() {
                                 { "scopes", new JsonArray() { "User.Read.All" } } }
                             },
@@ -196,7 +196,7 @@ public class BasicTests
                             }
                         }
                     },
-                    Requests = new() {
+                    Requests = new List<RequestInfo>() {
                         new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
                         new() { Method = "POST", UriTemplate = "/api/v1/endpoint" }
                     },

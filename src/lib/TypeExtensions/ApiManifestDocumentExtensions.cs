@@ -3,6 +3,7 @@ using Microsoft.OpenApi.ApiManifest.Helpers;
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
 
 namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
 {
@@ -20,13 +21,14 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>A <see cref="Task{OpenAIPluginManifest}"/></returns>
         public static async Task<OpenAIPluginManifest> ToOpenAIPluginManifestAsync(this ApiManifestDocument apiManifestDocument, string logoUrl, string legalInfoUrl, string? apiDependencyName = default, string? openApiPath = default, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(apiManifestDocument);
             if (!TryGetApiDependency(apiManifestDocument.ApiDependencies, apiDependencyName, out ApiDependency? apiDependency))
             {
-                throw new ApiManifestException(string.Format(ErrorMessage.ApiDependencyNotFound, nameof(OpenAIPluginManifest)));
+                throw new ApiManifestException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.ApiDependencyNotFound, nameof(OpenAIPluginManifest)));
             }
             else if (string.IsNullOrWhiteSpace(apiDependency?.ApiDescriptionUrl))
             {
-                throw new ApiManifestException(string.Format(ErrorMessage.ApiDescriptionUrlNotFound, nameof(OpenAIPluginManifest)));
+                throw new ApiManifestException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.ApiDescriptionUrlNotFound, nameof(OpenAIPluginManifest)));
             }
             else
             {
@@ -46,6 +48,8 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>A <see cref="OpenAIPluginManifest"/></returns>
         public static OpenAIPluginManifest ToOpenAIPluginManifest(this ApiManifestDocument apiManifestDocument, OpenApiDocument openApiDocument, string logoUrl, string legalInfoUrl, string openApiPath)
         {
+            ArgumentNullException.ThrowIfNull(apiManifestDocument);
+            ArgumentNullException.ThrowIfNull(openApiDocument);
             // Validates the ApiManifestDocument before generating the OpenAI manifest. This includes the publisher object.
             apiManifestDocument.Validate();
             string contactEmail = apiManifestDocument.Publisher?.ContactEmail!;

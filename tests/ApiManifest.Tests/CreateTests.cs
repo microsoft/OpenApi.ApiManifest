@@ -74,7 +74,7 @@ public class CreateTests
                     ApiDeploymentBaseUrl = "https://api.contoso.com/",
                     AuthorizationRequirements = new() {
                         ClientIdentifier = "2143234-234324-234234234-234",
-                        Access = new() {
+                        Access = new List<AccessRequest>() {
                             new() { Type = "oauth2",
                                     Content = new JsonObject() {
                                                 { "scopes", new JsonArray() { "user.read", "user.write" } }

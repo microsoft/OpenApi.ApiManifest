@@ -6,8 +6,8 @@ namespace Microsoft.OpenApi.ApiManifest;
 public class AuthorizationRequirements
 {
     public string? ClientIdentifier { get; set; }
-    public List<string>? AccessReference { get; set; }
-    public List<AccessRequest>? Access { get; set; }
+    public IList<string>? AccessReference { get; set; }
+    public IList<AccessRequest>? Access { get; set; }
 
     private const string ClientIdentifierProperty = "clientIdentifier";
     private const string AccessProperty = "access";
@@ -28,7 +28,7 @@ public class AuthorizationRequirements
         }
         else if (content.ValueKind == JsonValueKind.Object)
         {
-            o.Access = ParsingHelpers.GetList<AccessRequest>(v, AccessRequest.Load);
+            o.Access = ParsingHelpers.GetList(v, AccessRequest.Load);
         }
     }
 
@@ -38,25 +38,25 @@ public class AuthorizationRequirements
         ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
 
-        if (!String.IsNullOrWhiteSpace(ClientIdentifier)) writer.WriteString(ClientIdentifierProperty, ClientIdentifier);
+        if (!string.IsNullOrWhiteSpace(ClientIdentifier)) writer.WriteString(ClientIdentifierProperty, ClientIdentifier);
 
-        if (Access != null)
+        if (AccessReference is not null)
         {
             writer.WritePropertyName(AccessProperty);
             writer.WriteStartArray();
-            if (AccessReference != null)
+            foreach (string accessReference in AccessReference)
             {
-                foreach (string accessReference in AccessReference)
-                {
-                    writer.WriteStringValue(accessReference);
-                }
+                writer.WriteStringValue(accessReference);
             }
-            else if (Access != null)
+            writer.WriteEndArray();
+        }
+        else if (Access is not null)
+        {
+            writer.WritePropertyName(AccessProperty);
+            writer.WriteStartArray();
+            foreach (AccessRequest accessRequest in Access)
             {
-                foreach (AccessRequest accessRequest in Access)
-                {
-                    accessRequest.Write(writer);
-                }
+                accessRequest.Write(writer);
             }
             writer.WriteEndArray();
         }
