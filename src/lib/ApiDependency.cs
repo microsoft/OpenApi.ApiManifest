@@ -17,7 +17,7 @@ public class ApiDependency
         }
     }
     public AuthorizationRequirements? AuthorizationRequirements { get; set; }
-    public List<RequestInfo> Requests { get; set; } = new List<RequestInfo>();
+    public IList<RequestInfo> Requests { get; set; } = new List<RequestInfo>();
     public Extensions? Extensions { get; set; }
 
     private const string ApiDescriptionUrlProperty = "apiDescriptionUrl";
@@ -30,6 +30,7 @@ public class ApiDependency
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
 
         if (!string.IsNullOrWhiteSpace(ApiDescriptionUrl)) writer.WriteString(ApiDescriptionUrlProperty, ApiDescriptionUrl);
@@ -39,7 +40,7 @@ public class ApiDependency
         if (AuthorizationRequirements != null)
         {
             writer.WritePropertyName(AuthorizationRequirementsProperty);
-            AuthorizationRequirements?.Write(writer);
+            AuthorizationRequirements.Write(writer);
         }
 
         if (Requests.Count > 0)
@@ -56,7 +57,7 @@ public class ApiDependency
         if (Extensions != null)
         {
             writer.WritePropertyName(ExtensionsProperty);
-            Extensions?.Write(writer);
+            Extensions.Write(writer);
         }
 
         writer.WriteEndObject();

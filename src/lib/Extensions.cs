@@ -26,6 +26,7 @@ public class Extensions : Dictionary<string, JsonNode?>
 
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
         foreach (var extension in this)
         {

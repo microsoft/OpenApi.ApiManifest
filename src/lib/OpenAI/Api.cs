@@ -46,6 +46,7 @@ public class Api
 
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         Validate(this);
         writer.WriteStartObject();
         writer.WriteString(TypeProperty, Type);

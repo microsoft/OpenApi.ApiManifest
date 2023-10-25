@@ -21,6 +21,7 @@ public class AccessRequest
     }
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
         if (!String.IsNullOrWhiteSpace(Type)) writer.WriteString(TypeProperty, Type);
         if (Content != null)

@@ -7,7 +7,7 @@ public class RequestInfo
     public string? Method { get; set; }
     public string? UriTemplate { get; set; }
     public string? DataClassification { get; set; }
-    public bool Exclude { get; set; } = false;
+    public bool Exclude { get; set; }
 
     private const string MethodProperty = "method";
     private const string UriTemplateProperty = "uriTemplate";
@@ -17,6 +17,7 @@ public class RequestInfo
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteStartObject();
 
         if (!String.IsNullOrWhiteSpace(Method)) writer.WriteString(MethodProperty, Method);

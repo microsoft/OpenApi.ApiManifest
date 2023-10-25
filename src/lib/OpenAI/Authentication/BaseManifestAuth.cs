@@ -36,6 +36,7 @@ public abstract class BaseManifestAuth
     /// <param name="writer">The <see cref="Utf8JsonWriter"/> to use.</param>
     protected void WriteProperties(Utf8JsonWriter writer)
     {
+        ArgumentNullException.ThrowIfNull(writer);
         writer.WriteString(TypeProperty, Type);
         if (!string.IsNullOrWhiteSpace(Instructions)) writer.WriteString(InstructionsProperty, Instructions);
     }

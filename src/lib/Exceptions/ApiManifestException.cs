@@ -12,5 +12,9 @@ namespace Microsoft.OpenApi.ApiManifest.Exceptions
         public ApiManifestException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        public ApiManifestException() : base()
+        {
+        }
     }
 }
