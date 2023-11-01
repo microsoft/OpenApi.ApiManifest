@@ -151,16 +151,14 @@ internal static class ParsingHelpers
         return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken).ConfigureAwait(false);
     }
 
-    internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
+    internal static Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        ReadResult result = await new OpenApiStreamReader(new OpenApiReaderSettings
+        return new OpenApiStreamReader(new OpenApiReaderSettings
         {
             LoadExternalRefs = inlineExternal,
             BaseUrl = openApiFileUri
         }
-        ).ReadAsync(stream, cancellationToken).ConfigureAwait(false);
-
-        return result;
+        ).ReadAsync(stream, cancellationToken);
     }
 
     internal static async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken = default)

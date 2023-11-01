@@ -531,20 +531,20 @@ public class OpenAIPluginManifestTests
     }
 
     [Fact]
-    public void GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependency()
+    public async Task GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependency()
     {
-        _ = Assert.ThrowsAsync<ApiManifestException>(
-            async () => await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "ContosoApi", "./openapi.yml"));
+        _ = await Assert.ThrowsAsync<ApiManifestException>(
+            () => exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "ContosoApi", "./openapi.yml"));
     }
 
     [Fact]
-    public void GenerateOpenAIPluginManifestFromApiManifestWithEmptyApiDependencies()
+    public async Task GenerateOpenAIPluginManifestFromApiManifestWithEmptyApiDependencies()
     {
         var apiManifest = LoadTestApiManifestDocument();
         apiManifest.ApiDependencies.Clear();
 
-        _ = Assert.ThrowsAsync<ApiManifestException>(
-            async () => await apiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml"));
+        _ = await Assert.ThrowsAsync<ApiManifestException>(
+            () => apiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml"));
     }
 
     private static OpenAIPluginManifest CreateManifestPlugIn()

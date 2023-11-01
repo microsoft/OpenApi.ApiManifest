@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.Helpers;
+using Microsoft.OpenApi.Readers.Exceptions;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
@@ -124,17 +125,17 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
         }
 
         [Fact]
-        public void ParseOpenApiWithWrongOpenApiUrl()
+        public async Task ParseOpenApiWithWrongOpenApiUrl()
         {
             var openApiUri = new Uri("https://contoso.com/NotValid.yaml");
-            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+            _ = await Assert.ThrowsAsync<OpenApiUnsupportedSpecVersionException>(() => ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
 
         [Fact]
-        public void ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
+        public async Task ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
         {
             var openApiUri = new Uri("xyx://contoso.com/openapi.yaml");
-            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+            _ = await Assert.ThrowsAsync<ArgumentException>(() => ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
     }
 }
