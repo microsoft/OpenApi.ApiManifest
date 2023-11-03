@@ -7,18 +7,16 @@ An "api manifest" is a way to store the dependencies that an application has on 
 You can create an API manifest in code:
 
 ```csharp
- var apiManifest = new ApiManifestDocument() {
-            Publisher = new(contactEmail: "example@example.org") {
-                Name = "Microsoft"
-            },
+ var apiManifest = new ApiManifestDocument("Example") {
+            Publisher = new(name: "Example", contactEmail: "example@example.org"),
             ApiDependencies = new() {
                 { "example", new()
                     {
-                        ApiDescripionUrl = "https://example.org",
-                        Auth = new()
+                        ApiDescriptionUrl = "https://example.org",
+                        AuthorizationRequirements = new()
                         {
                             ClientIdentifier = "1234",
-                            Access = new() {
+                            Access = new List<AccessRequest> {
                                 new () { Type= "application", Content = new JsonObject() {
                                         { "scopes", new JsonArray() {"User.Read.All"} }}
                                      } ,
@@ -27,7 +25,7 @@ You can create an API manifest in code:
                                      }
                             }
                         },
-                        Requests = new() {
+                        Requests = new List<RequestInfo> {
                             new() { Method = "GET", UriTemplate = "/api/v1/endpoint" },
                             new () { Method = "POST", UriTemplate = "/api/v1/endpoint"}
                         }
