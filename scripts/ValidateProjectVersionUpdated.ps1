@@ -28,12 +28,11 @@ Param(
 
 [xml]$xmlDoc = Get-Content $projectPath
 
-# Assumption: There is only one PropertyGroup
-$versionPrefixString = $xmlDoc.Project.PropertyGroup.VersionPrefix
-if($xmlDoc.Project.PropertyGroup.VersionSuffix){
-    $versionPrefixString = $versionPrefixString + "-"  + $xmlDoc.Project.PropertyGroup.VersionSuffix
+$PropertyGroup = $xmlDoc.Project.PropertyGroup | Where-Object -Property PackageId -eq "Microsoft.OpenApi.ApiManifest"
+$versionPrefixString = $PropertyGroup.VersionPrefix
+if ($PropertyGroup.VersionSuffix) {
+    $versionPrefixString = $versionPrefixString + "-" + $PropertyGroup.VersionSuffix
 }
-
 
 # System.Version, get the version prefix.
 $currentProjectVersion = [System.Management.Automation.SemanticVersion]"$versionPrefixString"
@@ -47,7 +46,7 @@ Try {
     $nugetIndex = Invoke-RestMethod -Uri $url -Method Get
 }
 Catch {
-    if ($_.ErrorDetails.Message && $_.ErrorDetails.Message.Contains("The specified blob does not exist.")) {
+    if ($_.ErrorDetails.Message -and $_.ErrorDetails.Message.Contains("The specified blob does not exist.")) {
         Write-Host "No package exists. You will probably be publishing $packageName for the first time."
         Exit # exit gracefully
     }
