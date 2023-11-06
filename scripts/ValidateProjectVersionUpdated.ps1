@@ -29,9 +29,9 @@ Param(
 [xml]$xmlDoc = Get-Content $projectPath
 
 # Assumption: There is only one PropertyGroup
-$versionPrefixString = $xmlDoc.Project.PropertyGroup.VersionPrefix
-if($xmlDoc.Project.PropertyGroup.VersionSuffix){
-    $versionPrefixString = $versionPrefixString + "-"  + $xmlDoc.Project.PropertyGroup.VersionSuffix
+$versionPrefixString = $xmlDoc.Project.PropertyGroup.VersionPrefix[0]
+if ($xmlDoc.Project.PropertyGroup.VersionSuffix.Count) {
+    $versionPrefixString = $versionPrefixString + "-" + $xmlDoc.Project.PropertyGroup.VersionSuffix[0]
 }
 
 
@@ -47,7 +47,7 @@ Try {
     $nugetIndex = Invoke-RestMethod -Uri $url -Method Get
 }
 Catch {
-    if ($_.ErrorDetails.Message && $_.ErrorDetails.Message.Contains("The specified blob does not exist.")) {
+    if ($_.ErrorDetails.Message -and $_.ErrorDetails.Message.Contains("The specified blob does not exist.")) {
         Write-Host "No package exists. You will probably be publishing $packageName for the first time."
         Exit # exit gracefully
     }
