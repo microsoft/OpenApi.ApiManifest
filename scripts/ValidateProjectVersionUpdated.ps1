@@ -28,12 +28,11 @@ Param(
 
 [xml]$xmlDoc = Get-Content $projectPath
 
-# Assumption: There is only one PropertyGroup
-$versionPrefixString = $xmlDoc.Project.PropertyGroup.VersionPrefix[0]
-if ($xmlDoc.Project.PropertyGroup.VersionSuffix.Count) {
-    $versionPrefixString = $versionPrefixString + "-" + $xmlDoc.Project.PropertyGroup.VersionSuffix[0]
+$PropertyGroup = $xmlDoc.Project.PropertyGroup | Where-Object -Property PackageId -eq "Microsoft.OpenApi.ApiManifest"
+$versionPrefixString = $PropertyGroup.VersionPrefix
+if ($PropertyGroup.VersionSuffix) {
+    $versionPrefixString = $versionPrefixString + "-" + $PropertyGroup.VersionSuffix
 }
-
 
 # System.Version, get the version prefix.
 $currentProjectVersion = [System.Management.Automation.SemanticVersion]"$versionPrefixString"
