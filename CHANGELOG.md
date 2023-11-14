@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ToApiManifest extension method on OpenApiDocument. #46
+
+## [0.5.2] - 2023-11-06
+
+### Added
+
 - Added support for conversion of API manifest document to OpenAI Plugin manifest. #4
 - Added VerificationTokens property to OpenAI Plugin manifest auth type. #32
 - Added OpenAI Plugin manifest validation. #32
