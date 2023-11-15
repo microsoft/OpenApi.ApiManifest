@@ -58,7 +58,7 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
             Assert.Equal(exampleDocument.Info.Contact?.Email, apiManifest.Publisher?.ContactEmail);
             Assert.NotNull(apiManifest.ApiDependencies);
             _ = Assert.Single(apiManifest.ApiDependencies);
-            Assert.Equal(exampleDocument.Info.Title.Trim().Replace(' ', '-'), apiManifest.ApiDependencies.First().Key);
+            Assert.Equal("GraphAPI", apiManifest.ApiDependencies.First().Key);
             Assert.Equal(apiDescriptionUrl, apiManifest.ApiDependencies.First().Value.ApiDescriptionUrl);
             Assert.Equal(exampleDocument.Info.Version, apiManifest.ApiDependencies.First().Value.ApiDescriptionVersion);
             Assert.Equal(exampleDocument.Servers.First().Url, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
@@ -118,13 +118,71 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
             Assert.Equal(exampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
         }
 
+        [Fact]
+        public void ToApiManifestWhenOpenApiContactInfoIsNullAndNoPublisherInfoIIsProvidedReturnsApiManifestDocument()
+        {
+            // Arrange
+            var apiDescriptionUrl = "https://example.com/api-description.yaml";
+            var applicationName = "application-name";
+            var apiDependencyName = "graph";
+            var apiDeploymentBaseUrl = "https://example.com/api/";
+            var localExampleDocument = CreateDocument();
+            localExampleDocument.Info.Contact = null;
+
+            // Act
+            var apiManifest = localExampleDocument.ToApiManifest(apiDescriptionUrl, applicationName, apiDependencyName);
+
+            // Assert
+            Assert.NotNull(apiManifest);
+            Assert.Equal(applicationName, apiManifest.ApplicationName);
+            Assert.NotNull(apiManifest.Publisher);
+            Assert.Equal(OpenApiDocumentExtensions.DefaultPublisherName, apiManifest.Publisher?.Name);
+            Assert.Equal(OpenApiDocumentExtensions.DefaultPublisherEmail, apiManifest.Publisher?.ContactEmail);
+            Assert.NotNull(apiManifest.ApiDependencies);
+            _ = Assert.Single(apiManifest.ApiDependencies);
+            Assert.Equal(apiDependencyName, apiManifest.ApiDependencies.First().Key);
+            Assert.Equal(apiDescriptionUrl, apiManifest.ApiDependencies.First().Value.ApiDescriptionUrl);
+            Assert.Equal(localExampleDocument.Info.Version, apiManifest.ApiDependencies.First().Value.ApiDescriptionVersion);
+            Assert.Equal(apiDeploymentBaseUrl, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
+            Assert.Equal(localExampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
+        }
+
+        [Fact]
+        public void ToApiManifestWithAllParametersReturnsApiManifestDocument()
+        {
+            // Arrange
+            var apiDescriptionUrl = "https://example.com/api-description.yaml";
+            var applicationName = "application-name";
+            var apiDependencyName = "graph";
+            var apiDeploymentBaseUrl = "https://example.com/api/";
+            var publisherName = "FooBar";
+            var publisherEmail = "FooBar@contoso.com";
+
+            // Act
+            var apiManifest = exampleDocument.ToApiManifest(apiDescriptionUrl, applicationName, apiDependencyName, publisherName, publisherEmail);
+
+            // Assert
+            Assert.NotNull(apiManifest);
+            Assert.Equal(applicationName, apiManifest.ApplicationName);
+            Assert.NotNull(apiManifest.Publisher);
+            Assert.Equal(publisherName, apiManifest.Publisher?.Name);
+            Assert.Equal(publisherEmail, apiManifest.Publisher?.ContactEmail);
+            Assert.NotNull(apiManifest.ApiDependencies);
+            _ = Assert.Single(apiManifest.ApiDependencies);
+            Assert.Equal(apiDependencyName, apiManifest.ApiDependencies.First().Key);
+            Assert.Equal(apiDescriptionUrl, apiManifest.ApiDependencies.First().Value.ApiDescriptionUrl);
+            Assert.Equal(exampleDocument.Info.Version, apiManifest.ApiDependencies.First().Value.ApiDescriptionVersion);
+            Assert.Equal(apiDeploymentBaseUrl, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
+            Assert.Equal(exampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
+        }
+
         private static OpenApiDocument CreateDocument()
         {
             return new OpenApiDocument
             {
                 Info = new OpenApiInfo
                 {
-                    Title = "Graph API",
+                    Title = " Graph + API ",
                     Version = "v1.0",
                     Contact = new OpenApiContact
                     {

@@ -39,9 +39,9 @@ graph LR
 
 ### Mapping Steps
 
-1. `Publisher.Name`: If `Info.Contact.Name` is present in the OpenAPI document, it maps to `Publisher.Name` in the API Manifest document. If not, the default value is `publisher-name`. This field is required in the API Manifest.
-2. `Publisher.Email`: If `Info.Contact.Email` is present in the OpenAPI document, it maps to `Publisher.Email` in the API Manifest document. If not, the default value is `publisher-email@example.com`. This field is required in the API Manifest.
-3. `ApiDependencies.Key`: If a customer doesn't provide a key for an ApiDependency in the API Manifest document, the `Info.Title` from the OpenAPI document is used. The converter modifies the `Info.Title` value by removing any leading or trailing whitespace and replacing any spaces between words with `-`
+1. `Publisher.Name`: If a customer does not provide the publisher name, the `Info.Contact.Name` from the OpenAPI document is used as the `Publisher.Name` in the API Manifest document. If the OpenAPI document does not contain `Info.Contact.Name`, a default value of `publisher-name` is used. This field is required in the API Manifest.
+2. `Publisher.Email`: If a customer does not provide the publisher email, the `Info.Contact.Email` from the OpenAPI document is used as the `Publisher.Email` in the API Manifest document. If the OpenAPI document does not contain `Info.Contact.Email`, a default value of `publisher-email@example.com` is used. This field is required in the API Manifest.
+3. `ApiDependencies.Key`: If a customer doesn't provide a key for an ApiDependency in the API Manifest document, the `Info.Title` from the OpenAPI document is used as the api dependency key. The converter normalizes the `Info.Title` value by removing all special characters and whitespace.
 4. `ApiDependencies[key].ApiDeploymentBaseUrl`: If the `Servers` field in the OpenAPI document contains at least one server, the URL of the first server maps to this field in the API Manifest document. If not, this field is assumed to be null.
 5. `ApiDependencies[key].ApiDescriptionVersion`: The `Info.Version` from the OpenAPI document maps to this field in the API Manifest document.
 6. `ApiDependencies[key].Requests.UriTemplate`: The `Paths.Key` from the OpenAPI document maps to `Requests.UriTemplate` field in the API Manifest document.
