@@ -10,7 +10,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
     public static partial class OpenApiDocumentExtensions
     {
         [GeneratedRegex("[^a-zA-Z0-9]", RegexOptions.Compiled, 5000)]
-        private static partial Regex ApiNameAllowedCharactersRegex();
+        private static partial Regex SpecialCharactersInApiNameRegex();
         internal const string DefaultPublisherName = "publisher-name";
         internal const string DefaultPublisherEmail = "publisher-email@example.com";
 
@@ -71,7 +71,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         private static string NormalizeApiName(string apiName)
         {
             // Normalize OpenAPI document title to API dependency name by removing all special characters from the provided api name.
-            return ApiNameAllowedCharactersRegex().Replace(apiName, string.Empty);
+            return SpecialCharactersInApiNameRegex().Replace(apiName, string.Empty);
         }
 
         private static string? GetApiDeploymentBaseUrl(OpenApiServer? server)
