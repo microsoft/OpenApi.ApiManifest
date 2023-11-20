@@ -126,7 +126,7 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
         [Fact]
         public async Task ParseOpenApiWithWrongOpenApiUrl()
         {
-            var openApiUri = new Uri("https://contoso.com/NotValid.yaml");
+            var openApiUri = new Uri("https://1CED4309-EFBF-41A8-9E8F-8BBA0CB3EEE5.com/NotValid.yaml");
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
 
