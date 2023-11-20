@@ -124,17 +124,17 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
         }
 
         [Fact]
-        public void ParseOpenApiWithWrongOpenApiUrl()
+        public async Task ParseOpenApiWithWrongOpenApiUrl()
         {
-            var openApiUri = new Uri("https://contoso.com/NotValid.yaml");
-            _ = Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+            var openApiUri = new Uri("https://1CED4309-EFBF-41A8-9E8F-8BBA0CB3EEE5.com/NotValid.yaml");
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
 
         [Fact]
-        public void ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
+        public async Task ParseOpenApiWithOpenApiUrlWithAnInvalidSchema()
         {
             var openApiUri = new Uri("xyx://contoso.com/openapi.yaml");
-            _ = Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
     }
 }
