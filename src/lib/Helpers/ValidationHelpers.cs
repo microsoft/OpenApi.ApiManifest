@@ -32,17 +32,17 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.BaseUrlIsNotValid, nameof(baseUrl)), parameterName);
         }
 
+        internal static void ThrowIfNull(object? obj, string? paramName = null)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(paramName);
+        }
+
         private static readonly Regex s_emailRegex = new(@"^[^@\s]+@[^@\s]+$", RegexOptions.Compiled, Constants.DefaultRegexTimeout);
         private static void ValidateEmail(string parameterName, string value)
         {
             if (!s_emailRegex.IsMatch(value))
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.FieldIsNotValid, parameterName), parameterName);
-        }
-
-        public static void ThrowIfNull<T>(T obj, string paramName)
-        {
-            if (obj == null)
-                throw new ArgumentNullException(paramName);
         }
     }
 }

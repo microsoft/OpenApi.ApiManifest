@@ -32,8 +32,10 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             }
             else
             {
-                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency!.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
-                return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath ?? apiDependency.ApiDescriptionUrl!);
+                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency?.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(openApiPath))
+                    openApiPath = apiDependency?.ApiDescriptionUrl;
+                return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath!);
             }
         }
 
