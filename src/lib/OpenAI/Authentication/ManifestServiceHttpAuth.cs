@@ -39,7 +39,7 @@ public class ManifestServiceHttpAuth : BaseManifestAuth
 
     public override void Write(Utf8JsonWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         writer.WriteStartObject();
         WriteProperties(writer);
         writer.WriteString(AuthorizationTypeProperty, AuthorizationType);

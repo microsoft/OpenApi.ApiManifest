@@ -9,8 +9,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
 {
     public static partial class OpenApiDocumentExtensions
     {
-        [GeneratedRegex("[^a-zA-Z0-9]", RegexOptions.Compiled, 5000)]
-        private static partial Regex SpecialCharactersInApiNameRegex();
+        private static readonly Regex s_specialCharactersInApiNameRegex = new("[^a-zA-Z0-9]", RegexOptions.Compiled, TimeSpan.FromSeconds(5));
         internal const string DefaultPublisherName = "publisher-name";
         internal const string DefaultPublisherEmail = "publisher-email@example.com";
 
@@ -34,7 +33,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>An <see cref="ApiManifestDocument"/>.</returns>
         public static ApiManifestDocument ToApiManifest(this OpenApiDocument document, string? apiDescriptionUrl, string applicationName, string? apiDependencyName = default, string? publisherName = default, string? publisherEmail = default)
         {
-            ArgumentNullException.ThrowIfNull(document);
+            ValidationHelpers.ThrowIfNull(document, nameof(document));
             ValidationHelpers.ValidateNullOrWhitespace(nameof(apiDescriptionUrl), apiDescriptionUrl, nameof(ApiManifestDocument));
             ValidationHelpers.ValidateNullOrWhitespace(nameof(applicationName), applicationName, nameof(ApiManifestDocument));
 
@@ -44,18 +43,18 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             if (string.IsNullOrEmpty(publisherEmail))
                 publisherEmail = document.Info.Contact?.Email is string cEmail && !string.IsNullOrEmpty(cEmail) ? cEmail : DefaultPublisherEmail;
 
-            apiDependencyName = NormalizeApiName(string.IsNullOrEmpty(apiDependencyName) ? document.Info.Title : apiDependencyName);
+            apiDependencyName = NormalizeApiName(string.IsNullOrEmpty(apiDependencyName) ? document.Info.Title : apiDependencyName!);
             string? apiDeploymentBaseUrl = GetApiDeploymentBaseUrl(document.Servers.FirstOrDefault());
 
             var apiManifest = new ApiManifestDocument(applicationName)
             {
-                Publisher = new(publisherName, publisherEmail),
+                Publisher = new(publisherName!, publisherEmail!),
                 ApiDependencies = new() {
                     {
                         apiDependencyName, new() {
                             ApiDescriptionUrl = apiDescriptionUrl,
                             ApiDescriptionVersion = document.Info.Version,
-                            ApiDeploymentBaseUrl = apiDeploymentBaseUrl,
+                            ApiDeploymentBaseUrl = apiDeploymentBaseUrl
                         }
                     }
                 }
@@ -79,7 +78,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         private static string NormalizeApiName(string apiName)
         {
             // Normalize OpenAPI document title to API dependency name by removing all special characters from the provided api name.
-            return SpecialCharactersInApiNameRegex().Replace(apiName, string.Empty);
+            return s_specialCharactersInApiNameRegex.Replace(apiName, string.Empty);
         }
 
         private static string? GetApiDeploymentBaseUrl(OpenApiServer? server)

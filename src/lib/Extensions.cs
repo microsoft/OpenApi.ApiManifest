@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -26,7 +27,7 @@ public class Extensions : Dictionary<string, JsonNode?>
 
     public void Write(Utf8JsonWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         writer.WriteStartObject();
         foreach (var extension in this)
         {

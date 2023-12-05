@@ -30,7 +30,7 @@ public class ApiManifestDocument
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         Validate();
         writer.WriteStartObject();
         writer.WriteString(ApplicationNameProperty, ApplicationName);

@@ -86,7 +86,7 @@ public class OpenAIPluginManifest
     //Write method
     public void Write(Utf8JsonWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         Validate(this);
         writer.WriteStartObject();
         writer.WriteString(SchemaVersionProperty, SchemaVersion);
@@ -138,8 +138,8 @@ public class OpenAIPluginManifest
         ValidationHelpers.ValidateLength(nameof(DescriptionForModel), openAIPluginManifest.DescriptionForModel, 8000);
 
         ValidationHelpers.ValidateNullOrWhitespace(nameof(SchemaVersion), openAIPluginManifest.SchemaVersion, nameof(OpenAIPluginManifest));
-        ArgumentNullException.ThrowIfNull(openAIPluginManifest.Auth);
-        ArgumentNullException.ThrowIfNull(openAIPluginManifest.Api);
+        ValidationHelpers.ThrowIfNull(openAIPluginManifest.Auth, "Auth");
+        ValidationHelpers.ThrowIfNull(openAIPluginManifest.Api, "Api");
         ValidationHelpers.ValidateNullOrWhitespace(nameof(LogoUrl), openAIPluginManifest.LogoUrl, nameof(OpenAIPluginManifest));
         ValidationHelpers.ValidateEmail(nameof(ContactEmail), openAIPluginManifest.ContactEmail, nameof(OpenAIPluginManifest));
         ValidationHelpers.ValidateNullOrWhitespace(nameof(LegalInfoUrl), openAIPluginManifest.LegalInfoUrl, nameof(OpenAIPluginManifest));

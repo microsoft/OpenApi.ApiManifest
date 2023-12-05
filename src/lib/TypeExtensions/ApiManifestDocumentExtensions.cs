@@ -21,7 +21,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>A <see cref="Task{OpenAIPluginManifest}"/></returns>
         public static async Task<OpenAIPluginManifest> ToOpenAIPluginManifestAsync(this ApiManifestDocument apiManifestDocument, string logoUrl, string legalInfoUrl, string? apiDependencyName = default, string? openApiPath = default, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(apiManifestDocument);
+            ValidationHelpers.ThrowIfNull(apiManifestDocument, nameof(apiManifestDocument));
             if (!TryGetApiDependency(apiManifestDocument.ApiDependencies, apiDependencyName, out ApiDependency? apiDependency))
             {
                 throw new ApiManifestException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.ApiDependencyNotFound, nameof(OpenAIPluginManifest)));
@@ -32,8 +32,8 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             }
             else
             {
-                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
-                return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath ?? apiDependency.ApiDescriptionUrl);
+                var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency!.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
+                return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath ?? apiDependency.ApiDescriptionUrl!);
             }
         }
 
@@ -48,8 +48,8 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <returns>A <see cref="OpenAIPluginManifest"/></returns>
         public static OpenAIPluginManifest ToOpenAIPluginManifest(this ApiManifestDocument apiManifestDocument, OpenApiDocument openApiDocument, string logoUrl, string legalInfoUrl, string openApiPath)
         {
-            ArgumentNullException.ThrowIfNull(apiManifestDocument);
-            ArgumentNullException.ThrowIfNull(openApiDocument);
+            ValidationHelpers.ThrowIfNull(apiManifestDocument, nameof(apiManifestDocument));
+            ValidationHelpers.ThrowIfNull(openApiDocument, nameof(openApiDocument));
             // Validates the ApiManifestDocument before generating the OpenAI manifest. This includes the publisher object.
             apiManifestDocument.Validate();
             string contactEmail = apiManifestDocument.Publisher?.ContactEmail!;
@@ -75,7 +75,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             if (string.IsNullOrEmpty(apiDependencyName))
                 apiDependency = apiDependencies.FirstOrDefault().Value;
             else
-                _ = apiDependencies.TryGetValue(apiDependencyName, out apiDependency);
+                _ = apiDependencies.TryGetValue(apiDependencyName!, out apiDependency);
             return apiDependency != null;
         }
     }
