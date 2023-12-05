@@ -13,7 +13,7 @@
     <Company>Microsoft</Company>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageOutputPath>./../../artifacts</PackageOutputPath>
-	<LangVersion>latest</LangVersion>
+	<LangVersion>10</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SignAssembly>True</SignAssembly>
