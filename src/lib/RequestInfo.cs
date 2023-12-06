@@ -17,7 +17,7 @@ public class RequestInfo
     // Write method
     public void Write(Utf8JsonWriter writer)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         writer.WriteStartObject();
 
         if (!String.IsNullOrWhiteSpace(Method)) writer.WriteString(MethodProperty, Method);

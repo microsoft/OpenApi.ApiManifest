@@ -3,7 +3,6 @@
 
 using Microsoft.OpenApi.Readers;
 using System.Diagnostics;
-using System.Net;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest.Helpers;
@@ -11,10 +10,8 @@ namespace Microsoft.OpenApi.ApiManifest.Helpers;
 internal static class ParsingHelpers
 {
     // The HttpClient will default to SslProtocol of none. This lets the OS pick an appropriate SSL protocol.
-    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient())
-    {
-        Value = { DefaultRequestVersion = HttpVersion.Version20 }
-    };
+    private static readonly Lazy<HttpClient> s_httpClient = new(() => new HttpClient());
+
 
     internal static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
@@ -68,7 +65,7 @@ internal static class ParsingHelpers
         foreach (var item in v.EnumerateObject())
         {
             var value = item.Value.GetString();
-            map.Add(item.Name, string.IsNullOrWhiteSpace(value) ? string.Empty : value);
+            map.Add(item.Name, string.IsNullOrWhiteSpace(value) ? string.Empty : value!);
         }
         return map;
     }
@@ -136,18 +133,18 @@ internal static class ParsingHelpers
             if (string.IsNullOrEmpty(pair))
                 continue;
 
-            var index = pair.IndexOf('=', StringComparison.OrdinalIgnoreCase);
+            var index = pair.IndexOf("=", StringComparison.OrdinalIgnoreCase);
             if (index == -1)
                 throw new InvalidOperationException($"Unable to parse: {key}. Format is name1=value1;name2=value2;...");
 
-            var keyValue = new KeyValuePair<string, string>(pair[..index], pair[(index + 1)..]);
+            var keyValue = new KeyValuePair<string, string>(pair.Substring(0, index), pair.Substring(index + 1));
             yield return keyValue;
         }
     }
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        using var stream = await GetStreamAsync(openApiFileUri, cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var stream = await GetStreamAsync(openApiFileUri).ConfigureAwait(false);
         return await ParseOpenApiAsync(stream, openApiFileUri, inlineExternal, cancellationToken).ConfigureAwait(false);
     }
 
@@ -163,13 +160,13 @@ internal static class ParsingHelpers
         return result;
     }
 
-    internal static async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken = default)
+    internal static async Task<Stream> GetStreamAsync(Uri uri)
     {
         if (!uri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
             throw new ArgumentException($"The input {uri} is not a valid url", nameof(uri));
         try
         {
-            return await s_httpClient.Value.GetStreamAsync(uri, cancellationToken).ConfigureAwait(false);
+            return await s_httpClient.Value.GetStreamAsync(uri).ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
         {
