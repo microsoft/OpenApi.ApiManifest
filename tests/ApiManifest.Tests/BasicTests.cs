@@ -99,7 +99,33 @@ public class BasicTests
     {
         _ = Assert.Throws<ArgumentNullException>(() =>
         {
-            var serializedValue = "{\"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
+            var serializedValue = """
+            {
+                "apiDependencies": {
+                    "graph": {
+                        "apiDescriptionUrl": "https://example.org",
+                        "requests": [
+                            {
+                                "method": "GET",
+                                "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                            }
+                        ]
+                    }
+                }
+            }
+            """;
+            var doc = JsonDocument.Parse(serializedValue);
+            _ = ApiManifestDocument.Load(doc.RootElement);
+        }
+        );
+    }
+
+    [Fact]
+    public void FailToParseDocumentWithoutRequests()
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
+        {
+            var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
             var doc = JsonDocument.Parse(serializedValue);
             _ = ApiManifestDocument.Load(doc.RootElement);
         }
@@ -110,7 +136,22 @@ public class BasicTests
     public void ParsesApiDescriptionUrlField()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDescriptionUrl\":\"https://example.org\"}}}";
+        var serializedValue = """
+        {
+        "applicationName": "application-name",
+            "apiDependencies": {
+                "graph": {
+                    "apiDescriptionUrl": "https://example.org",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -123,7 +164,22 @@ public class BasicTests
     public void ParseApiDescriptionVersionField()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDescriptionVersion\":\"v1.0\"}}}";
+        var serializedValue = """
+        {
+        "applicationName": "application-name",
+            "apiDependencies": {
+                "graph": {
+                    "apiDescriptionVersion": "v1.0",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -136,7 +192,22 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrl()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"apiDeploymentBaseUrl\":\"https://example.org/\"}}}";
+        var serializedValue = """
+        {
+        "applicationName": "application-name",
+            "apiDependencies": {
+                "graph": {
+                    "apiDeploymentBaseUrl": "https://example.org/",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -150,7 +221,22 @@ public class BasicTests
     public void ParsesApiDeploymentBaseUrlWithDifferentCasing()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\"}}}";
+        var serializedValue = """
+        {
+        "applicationName": "application-name",
+            "apiDependencies": {
+                "graph": {
+                    "APIDeploymentBaseUrl": "https://example.org/",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
         var doc = JsonDocument.Parse(serializedValue);
 
         // When
@@ -164,7 +250,23 @@ public class BasicTests
     public void DoesNotFailOnExtraneousProperty()
     {
         // Given
-        var serializedValue = "{\"applicationName\": \"application-name\", \"apiDependencies\": { \"graph\": {\"APIDeploymentBaseUrl\":\"https://example.org/\", \"APISensitivity\":\"low\"}}}";
+        var serializedValue = """
+        {
+        "applicationName": "application-name",
+            "apiDependencies": {
+                "graph": {
+                    "APIDeploymentBaseUrl": "https://example.org/",
+                    "APISensitivity": "low",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
         var doc = JsonDocument.Parse(serializedValue);
 
         // When

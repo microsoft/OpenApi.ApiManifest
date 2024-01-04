@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.ApiManifest.Helpers;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
@@ -31,6 +32,8 @@ public class ApiDependency
     public void Write(Utf8JsonWriter writer)
     {
         ValidationHelpers.ThrowIfNull(writer, nameof(writer));
+        Validate();
+
         writer.WriteStartObject();
 
         if (!string.IsNullOrWhiteSpace(ApiDescriptionUrl)) writer.WriteString(ApiDescriptionUrlProperty, ApiDescriptionUrl);
@@ -43,16 +46,13 @@ public class ApiDependency
             AuthorizationRequirements.Write(writer);
         }
 
-        if (Requests.Count > 0)
+        writer.WritePropertyName(RequestsProperty);
+        writer.WriteStartArray();
+        foreach (var request in Requests)
         {
-            writer.WritePropertyName(RequestsProperty);
-            writer.WriteStartArray();
-            foreach (var request in Requests)
-            {
-                request.Write(writer);
-            }
-            writer.WriteEndArray();
+            request.Write(writer);
         }
+        writer.WriteEndArray();
 
         if (Extensions != null)
         {
@@ -63,13 +63,19 @@ public class ApiDependency
         writer.WriteEndObject();
     }
 
-
     // Load Method
     internal static ApiDependency Load(JsonElement value)
     {
         var apiDependency = new ApiDependency();
         ParsingHelpers.ParseMap(value, apiDependency, handlers);
+        apiDependency.Validate();
         return apiDependency;
+    }
+
+    internal void Validate()
+    {
+        if (Requests.Count == 0)
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ErrorMessage.FieldIsRequired, nameof(Requests), nameof(ApiDependency)));
     }
 
     // Fixed fieldmap for ApiDependency
