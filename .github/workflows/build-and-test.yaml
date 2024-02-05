@@ -3,9 +3,14 @@ name: Build and Test
 on:
   workflow_dispatch:
   push:
-    branches: [ 'main', 'dev', 'feature/*' ]
+    branches: ["main", "dev", "feature/*"]
   pull_request:
-    branches: [ 'main', 'dev' ]
+    branches: ["main", "dev"]
+
+permissions:
+  contents: read #those permissions are required to run the codeql analysis
+  actions: read
+  security-events: write
 
 jobs:
   build-and-test:
@@ -17,7 +22,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.x
+          dotnet-version: 8.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
