@@ -205,13 +205,11 @@ extends:
                     filePath: $(Pipeline.Workspace)\Nugets\scripts\GetNugetPackageVersion.ps1
                     pwsh: true
                     arguments: '-packageDirPath "$(Pipeline.Workspace)/Nugets/"'
-                - task: NuGetCommand@2
+                - output: nuget
                   displayName: 'NuGet push'
-                  inputs:
-                    command: push
-                    packagesToPush: '$(Pipeline.Workspace)/Nugets/Microsoft.OpenApi.ApiManifest.*.nupkg'
-                    nuGetFeedType: external
-                    publishFeedCredentials: 'OpenAPI Nuget Connection'
+                  packagesToPush: '$(Pipeline.Workspace)/Nugets/Microsoft.OpenApi.ApiManifest.*.nupkg'
+                  nuGetFeedType: external
+                  publishFeedCredentials: 'OpenAPI Nuget Connection'
                 - task: GitHubRelease@1
                   displayName: 'GitHub release (create)'
                   inputs:
