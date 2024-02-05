@@ -168,7 +168,7 @@ extends:
               Contents: 'scripts\**'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-          - task: PublishPipelineArtifact@1
+          - task: 1ES.PublishPipelineArtifact@1
             displayName: 'Upload Artifact: Nugets'
             inputs:
               artifactName: Nugets
