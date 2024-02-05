@@ -38,9 +38,9 @@ extends:
         steps:
 
         - task: UseDotNet@2
-          displayName: 'Use .NET 7'
+          displayName: 'Use .NET 8'
           inputs:
-            version: 7.x
+            version: 8.x
 
         - task: UseDotNet@2
           displayName: 'Use .NET 6 (for code signing tasks)'
@@ -68,7 +68,7 @@ extends:
           inputs:
             command: test
             projects: '$(Build.SourcesDirectory)\apimanifest.sln'
-            arguments: '--configuration $(BuildConfiguration) --no-build -f net7.0'
+            arguments: '--configuration $(BuildConfiguration) --no-build -f net8.0'
 
         - task: EsrpCodeSigning@2
           displayName: 'ESRP DLL CodeSigning'
