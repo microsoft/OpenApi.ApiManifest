@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-- Fixes a bug where the api dependencies would be deduplicated if they had the same key with different casing.
+## [0.5.5] - 2024-03-06
+
+### Changed
+
+- Fixed a bug where the api dependencies would be deduplicated if they had the same key with different casing.
 
 ## [0.5.4] - 2023-12-06
 
