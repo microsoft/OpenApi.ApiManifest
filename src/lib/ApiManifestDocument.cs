@@ -82,6 +82,6 @@ public class ApiManifestDocument
 
 public class ApiDependencies : Dictionary<string, ApiDependency>
 {
-    public ApiDependencies(IDictionary<string, ApiDependency> dictionary) : base(dictionary, StringComparer.OrdinalIgnoreCase) { }
-    public ApiDependencies() : base(StringComparer.OrdinalIgnoreCase) { }
+    public ApiDependencies(IDictionary<string, ApiDependency> dictionary) : base(dictionary, StringComparer.Ordinal) { }
+    public ApiDependencies() : base(StringComparer.Ordinal) { }
 }

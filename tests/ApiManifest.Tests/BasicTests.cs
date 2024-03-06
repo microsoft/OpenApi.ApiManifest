@@ -68,6 +68,14 @@ public class BasicTests
         Assert.Equal(exampleApiManifest.ApiDependencies["example"]?.Extensions?["example-API-dependency-extension"]?.ToString(), apiManifest.ApiDependencies["example"]?.Extensions?["example-api-dependency-extension"]?.ToString());
     }
 
+    [Fact]
+    public void AcceptsMultipleDependenciesWithDifferentCasing()
+    {
+        var document = new ApiManifestDocument("foo");
+        document.ApiDependencies.Add("bar", new());
+        document.ApiDependencies.Add("BAR", new());
+        Assert.Equal(2, document.ApiDependencies.Count);
+    }
 
     // Create an empty document
     [Fact]
