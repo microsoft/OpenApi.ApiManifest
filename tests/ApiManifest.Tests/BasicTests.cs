@@ -25,16 +25,16 @@ public class BasicTests
     [Fact]
     public void SerializeDocument()
     {
-        var stream = new MemoryStream();
-        var writer = new Utf8JsonWriter(stream);
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
         exampleApiManifest.Write(writer);
         writer.Flush();
         // Read string from stream
         stream.Position = 0;
-        var reader = new StreamReader(stream);
+        using var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
         Debug.WriteLine(json);
-        var doc = JsonDocument.Parse(json);
+        using var doc = JsonDocument.Parse(json);
         Assert.NotNull(doc);
         Assert.Equal("application-name", doc.RootElement.GetProperty("applicationName").GetString());
         Assert.Equal("Microsoft", doc.RootElement.GetProperty("publisher").GetProperty("name").GetString());
@@ -44,15 +44,15 @@ public class BasicTests
     [Fact]
     public void DeserializeDocument()
     {
-        var stream = new MemoryStream();
-        var writer = new Utf8JsonWriter(stream);
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
         exampleApiManifest.Write(writer);
         writer.Flush();
         // Read string from stream
         stream.Position = 0;
-        var reader = new StreamReader(stream);
+        using var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
-        var doc = JsonDocument.Parse(json);
+        using var doc = JsonDocument.Parse(json);
         var apiManifest = ApiManifestDocument.Load(doc.RootElement);
         Assert.Equivalent(exampleApiManifest.Publisher, apiManifest.Publisher);
         Assert.Equivalent(exampleApiManifest.ApiDependencies["example"].Requests, apiManifest.ApiDependencies["example"].Requests);
@@ -68,6 +68,48 @@ public class BasicTests
         Assert.Equal(exampleApiManifest.ApiDependencies["example"]?.Extensions?["example-API-dependency-extension"]?.ToString(), apiManifest.ApiDependencies["example"]?.Extensions?["example-api-dependency-extension"]?.ToString());
     }
 
+    [Fact]
+    public void AcceptsMultipleDependenciesWithDifferentCasing()
+    {
+        var document = new ApiManifestDocument("foo");
+        document.ApiDependencies.Add("bar", new());
+        document.ApiDependencies.Add("BAR", new());
+        Assert.Equal(2, document.ApiDependencies.Count);
+    }
+    [Fact]
+    public void DeserializesMultipleDependenciesWithDifferentCasing()
+    {
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
+        var document = new ApiManifestDocument("foo");
+        document.ApiDependencies.Add("bar", new()
+        {
+            Requests = [
+                new() {
+                    UriTemplate = "/foo/bar",
+                    Method = "GET"
+                }
+            ]
+        });
+        document.ApiDependencies.Add("BAR", new()
+        {
+            Requests = [
+                new() {
+                    UriTemplate = "/foo/bar",
+                    Method = "GET"
+                }
+            ]
+        });
+        document.Write(writer);
+        writer.Flush();
+        // Read string from stream
+        stream.Position = 0;
+        using var reader = new StreamReader(stream);
+        var json = reader.ReadToEnd();
+        using var doc = JsonDocument.Parse(json);
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+        Assert.Equal(2, apiManifest.ApiDependencies.Count);
+    }
 
     // Create an empty document
     [Fact]
