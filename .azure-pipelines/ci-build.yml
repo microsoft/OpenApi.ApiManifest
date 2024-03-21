@@ -209,6 +209,7 @@ extends:
                   displayName: 'NuGet push'
                   inputs:
                     packagesToPush: '$(Pipeline.Workspace)/Nugets/Microsoft.OpenApi.ApiManifest.*.nupkg'
+                    packageParentPath: '$(Pipeline.Workspace)'
                     nuGetFeedType: external
                     publishFeedCredentials: 'OpenAPI Nuget Connection'
                 - task: GitHubRelease@1
