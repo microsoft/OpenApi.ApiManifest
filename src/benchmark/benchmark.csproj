@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Benchmarkdotnet" Version="0.13.12" />
+    <PackageReference Include="Benchmarkdotnet" Version="0.14.0" />
   </ItemGroup>
 
   <PropertyGroup>
