@@ -72,7 +72,7 @@ public class OpenAIPluginManifestTests
 
         Assert.Equal("""
         {
-            "schema_version": "1.0.0",
+            "schema_version": "v1",
             "name_for_human": "TestOAuth",
             "name_for_model": "TestOAuthModel",
             "description_for_human": "SomeHumanDescription",
@@ -172,7 +172,7 @@ public class OpenAIPluginManifestTests
 
         Assert.Equal("""
         {
-            "schema_version": "1.0.0",
+            "schema_version": "v1",
             "name_for_human": "TestOAuth",
             "name_for_model": "TestOAuthModel",
             "description_for_human": "SomeHumanDescription",
@@ -259,7 +259,7 @@ public class OpenAIPluginManifestTests
 
         Assert.Equal("""
         {
-            "schema_version": "1.0.0",
+            "schema_version": "v1",
             "name_for_human": "TestOAuth",
             "name_for_model": "TestOAuthModel",
             "description_for_human": "SomeHumanDescription",
@@ -347,7 +347,7 @@ public class OpenAIPluginManifestTests
 
         Assert.Equal("""
         {
-            "schema_version": "1.0.0",
+            "schema_version": "v1",
             "name_for_human": "TestOAuth",
             "name_for_model": "TestOAuthModel",
             "description_for_human": "SomeHumanDescription",
@@ -501,7 +501,7 @@ public class OpenAIPluginManifestTests
     {
         var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com");
 
-        Assert.Equal("1.0.0", openAiPluginManifest.SchemaVersion);
+        Assert.Equal("v1", openAiPluginManifest.SchemaVersion);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForHuman);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForModel);
         Assert.Equal("Description for Mastodon.", openAiPluginManifest.DescriptionForHuman);
@@ -518,7 +518,7 @@ public class OpenAIPluginManifestTests
     {
         var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml");
 
-        Assert.Equal("v1.0", openAiPluginManifest.SchemaVersion);
+        Assert.Equal("v1", openAiPluginManifest.SchemaVersion);
         Assert.Equal("DirectoryObjects", openAiPluginManifest.NameForHuman);
         Assert.Equal("DirectoryObjects", openAiPluginManifest.NameForModel);
         Assert.Equal("Description for DirectoryObjects.", openAiPluginManifest.DescriptionForHuman);
@@ -549,7 +549,7 @@ public class OpenAIPluginManifestTests
 
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
-        var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest("TestOAuthModel", "TestOAuth", "https://avatars.githubusercontent.com/bar", "joe@test.com", "https://legalinfo.foobar.com", "1.0.0");
+        var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest("TestOAuthModel", "TestOAuth", "https://avatars.githubusercontent.com/bar", "joe@test.com", "https://legalinfo.foobar.com");
         manifest.DescriptionForHuman = "SomeHumanDescription";
         manifest.DescriptionForModel = "SomeModelDescription";
         manifest.Auth = new ManifestNoAuth();
