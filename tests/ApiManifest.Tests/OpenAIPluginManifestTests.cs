@@ -501,7 +501,7 @@ public class OpenAIPluginManifestTests
     {
         var openAiPluginManifest = await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com");
 
-        Assert.Equal("1.0.0", openAiPluginManifest.SchemaVersion);
+        Assert.Equal("0.0.0", openAiPluginManifest.SchemaVersion);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForHuman);
         Assert.Equal("Mastodon", openAiPluginManifest.NameForModel);
         Assert.Equal("Description for Mastodon.", openAiPluginManifest.DescriptionForHuman);
