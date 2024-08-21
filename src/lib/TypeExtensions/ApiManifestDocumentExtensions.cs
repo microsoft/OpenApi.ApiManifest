@@ -56,7 +56,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             apiManifestDocument.Validate();
             string contactEmail = apiManifestDocument.Publisher?.ContactEmail!;
 
-            var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(openApiDocument.Info.Title, openApiDocument.Info.Title, logoUrl, contactEmail, legalInfoUrl, openApiDocument.Info.Version);
+            var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(openApiDocument.Info.Title, openApiDocument.Info.Title, logoUrl, contactEmail, legalInfoUrl);
             openApiManifest.Api = new Api("openapi", openApiPath);
             openApiManifest.Auth = new ManifestNoAuth();
             openApiManifest.DescriptionForHuman = openApiDocument.Info.Description ?? $"Description for {openApiManifest.NameForHuman}.";

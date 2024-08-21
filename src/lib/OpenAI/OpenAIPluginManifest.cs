@@ -24,7 +24,7 @@ public class OpenAIPluginManifest
     /// <summary>
     /// REQUIRED. The version of the manifest schema.
     /// </summary>
-    public string? SchemaVersion { get; set; }
+    public string? SchemaVersion { get; private set; } = "v1";
     /// <summary>
     /// REQUIRED. The name of the plugin that will be shown to users.
     /// </summary>
@@ -62,9 +62,8 @@ public class OpenAIPluginManifest
     /// </summary>
     public string? LegalInfoUrl { get; set; }
 
-    public OpenAIPluginManifest(string nameForModel, string nameForHuman, string logoUrl, string contactEmail, string legalInfoUrl, string schemaVersion = "v1")
+    public OpenAIPluginManifest(string nameForModel, string nameForHuman, string logoUrl, string contactEmail, string legalInfoUrl)
     {
-        SchemaVersion = schemaVersion;
         NameForHuman = nameForHuman;
         NameForModel = nameForModel;
         LogoUrl = logoUrl;

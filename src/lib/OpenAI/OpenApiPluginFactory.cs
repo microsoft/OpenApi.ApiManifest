@@ -6,8 +6,8 @@ namespace Microsoft.OpenApi.ApiManifest.OpenAI;
 public static class OpenApiPluginFactory
 {
 
-    public static OpenAIPluginManifest CreateOpenAIPluginManifest(string nameForModel, string nameForHuman, string logoUrl, string contactEmail, string legalInfoUrl, string schemaVersion = "v1")
+    public static OpenAIPluginManifest CreateOpenAIPluginManifest(string nameForModel, string nameForHuman, string logoUrl, string contactEmail, string legalInfoUrl)
     {
-        return new OpenAIPluginManifest(nameForModel: nameForModel, nameForHuman: nameForHuman, logoUrl: logoUrl, contactEmail: contactEmail, legalInfoUrl: legalInfoUrl, schemaVersion: schemaVersion);
+        return new OpenAIPluginManifest(nameForModel: nameForModel, nameForHuman: nameForHuman, logoUrl: logoUrl, contactEmail: contactEmail, legalInfoUrl: legalInfoUrl);
     }
 }
