@@ -531,14 +531,14 @@ public class OpenAIPluginManifestTests
     }
 
     [Fact]
-    public async Task GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependency()
+    public async Task GenerateOpenAIPluginManifestFromApiManifestWithWrongApiDependencyAsync()
     {
         await Assert.ThrowsAsync<ApiManifestException>(
             async () => await exampleApiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "ContosoApi", "./openapi.yml"));
     }
 
     [Fact]
-    public async Task GenerateOpenAIPluginManifestFromApiManifestWithEmptyApiDependencies()
+    public async Task GenerateOpenAIPluginManifestFromApiManifestWithEmptyApiDependenciesAsync()
     {
         var apiManifest = LoadTestApiManifestDocument();
         apiManifest.ApiDependencies.Clear();
