@@ -35,10 +35,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <!-- suppressed because of this CVE https://github.com/advisories/GHSA-hh2w-p6rv-4g7w 
-     The target application is the one which will resolve the correct version
-     when the version range is updated to > 8.0.4 in the future, remove the nowarn suppression -->
-    <PackageReference Include="System.Text.Json" Version="[6.0,)" NoWarn="NU1903" />
+    <!-- The target application is the one which will resolve the correct version.
+     When the version range is updated to > 8.0.4 in the future, remove the GHSA suppression -->
+    <PackageReference Include="System.Text.Json" Version="[6.0,)" />
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-hh2w-p6rv-4g7w" />
   </ItemGroup>
 
 </Project>
