@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Reader;
 using Microsoft.OpenApi.Readers;
 using System.Diagnostics;
 using System.Text.Json;
@@ -150,12 +152,13 @@ internal static class ParsingHelpers
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        ReadResult result = await new OpenApiStreamReader(new OpenApiReaderSettings
+        OpenApiReaderRegistry.RegisterReader(OpenApiConstants.Yaml, new OpenApiYamlReader());
+        OpenApiReaderRegistry.RegisterReader(OpenApiConstants.Yml, new OpenApiYamlReader());
+        ReadResult result = await OpenApiDocument.LoadAsync(stream, settings: new OpenApiReaderSettings
         {
             LoadExternalRefs = inlineExternal,
             BaseUrl = openApiFileUri
-        }
-        ).ReadAsync(stream, cancellationToken).ConfigureAwait(false);
+        }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return result;
     }

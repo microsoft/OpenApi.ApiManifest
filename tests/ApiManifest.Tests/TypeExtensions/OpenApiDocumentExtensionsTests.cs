@@ -61,7 +61,9 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
             Assert.Equal("GraphAPI", apiManifest.ApiDependencies.First().Key);
             Assert.Equal(apiDescriptionUrl, apiManifest.ApiDependencies.First().Value.ApiDescriptionUrl);
             Assert.Equal(exampleDocument.Info.Version, apiManifest.ApiDependencies.First().Value.ApiDescriptionVersion);
-            Assert.Equal(exampleDocument.Servers.First().Url, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
+            Assert.NotNull(exampleDocument.Servers);
+            Assert.NotEmpty(exampleDocument.Servers);
+            Assert.Equal(exampleDocument.Servers[0].Url, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
             Assert.Equal(exampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
         }
 
@@ -87,7 +89,9 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
             Assert.Equal(apiDependencyName, apiManifest.ApiDependencies.First().Key);
             Assert.Equal(apiDescriptionUrl, apiManifest.ApiDependencies.First().Value.ApiDescriptionUrl);
             Assert.Equal(exampleDocument.Info.Version, apiManifest.ApiDependencies.First().Value.ApiDescriptionVersion);
-            Assert.Equal(exampleDocument.Servers.First().Url, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
+            Assert.NotNull(exampleDocument.Servers);
+            Assert.NotEmpty(exampleDocument.Servers);
+            Assert.Equal(exampleDocument.Servers[0].Url, apiManifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
             Assert.Equal(exampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
         }
 

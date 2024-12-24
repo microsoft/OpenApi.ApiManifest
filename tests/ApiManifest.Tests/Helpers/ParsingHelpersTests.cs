@@ -119,8 +119,8 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
             var testOpenApiFilePath = Path.Combine(".", "TestFiles", "testOpenApi.yaml");
             using var stream = File.OpenRead(testOpenApiFilePath);
             var results = await ParsingHelpers.ParseOpenApiAsync(stream, new Uri("https://contoso.com/openapi.yaml"), false, CancellationToken.None);
-            Assert.Empty(results.OpenApiDiagnostic.Errors);
-            Assert.NotNull(results.OpenApiDocument);
+            Assert.Empty(results.Diagnostic.Errors);
+            Assert.NotNull(results.Document);
         }
 
         [Fact]
