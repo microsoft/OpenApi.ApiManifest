@@ -35,7 +35,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
                 var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency!.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(openApiPath))
                     openApiPath = apiDependency.ApiDescriptionUrl;
-                return apiManifestDocument.ToOpenAIPluginManifest(result.Document, logoUrl, legalInfoUrl, openApiPath!);
+                return apiManifestDocument.ToOpenAIPluginManifest(result.OpenApiDocument, logoUrl, legalInfoUrl, openApiPath!);
             }
         }
 
