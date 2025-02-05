@@ -3,9 +3,9 @@ name: Build and Test
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "dev", "feature/*"]
+    branches: ["main", "dev", "feature/*", "support/v1"]
   pull_request:
-    branches: ["main", "dev"]
+    branches: ["main", "dev", "support/v1"]
 
 permissions:
   contents: read #those permissions are required to run the codeql analysis
