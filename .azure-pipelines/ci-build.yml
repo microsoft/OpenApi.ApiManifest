@@ -138,7 +138,7 @@ extends:
                 inputs:
                   targetType: "filePath"
                   filePath: $(System.DefaultWorkingDirectory)\scripts\ValidateProjectVersionUpdated.ps1
-                  arguments: '-projectPath "$(Build.SourcesDirectory)/src/lib/apimanifest.csproj" -packageName "Microsoft.OpenApi.ApiManifest"'
+                  arguments: '-projectPath "$(Build.SourcesDirectory)/Directory.Build.props" -packageName "Microsoft.OpenApi.ApiManifest"'
                   pwsh: true
 
               - task: EsrpCodeSigning@5
