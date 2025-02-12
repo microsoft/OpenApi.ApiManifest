@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/Microsoft/OpenApi.ApiManifest</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/microsoft/OpenApi.ApiManifest/releases</PackageReleaseNotes>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PackageIconUrl>http://go.microsoft.com/fwlink/?LinkID=288890</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/Microsoft/OpenApi.ApiManifest</PackageProjectUrl>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageTags>OpenAPI .NET</PackageTags>
+    <Version>2.0.0-preview1</Version>
+  </PropertyGroup>
+  <!-- https://github.com/clairernovotny/DeterministicBuilds#deterministic-builds -->
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+      <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Condition="!$(MSBuildProjectName.EndsWith('Tests'))" Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>
