@@ -5,10 +5,8 @@ on:
     branches:
       - main
       - support/v1
-    paths-ignore: ["**.md", ".vscode/**", "**.svg"]
   pull_request:
     types: [opened, synchronize, reopened]
-    paths-ignore: ["**.md", ".vscode/**", "**.svg"]
 
 permissions:
   contents: read
