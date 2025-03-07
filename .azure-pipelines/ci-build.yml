@@ -236,12 +236,15 @@ extends:
                         echo "$artifactVersion"
                       displayName: "Fetch Artifact Name"
                     - task: GitHubRelease@1
-                      displayName: "GitHub release (create)"
+                      displayName: "GitHub release (Upload assets)"
                       inputs:
                         gitHubConnection: "Kiota_Release"
                         target: $(Build.SourceVersion)
+                        action: edit
                         tagSource: userSpecifiedTag
                         tag: "v$(artifactVersion)"
-                        title: "v$(artifactVersion)"
-                        assets: "!**/**"
+                        assets: |
+                          !**/**
+                          $(Pipeline.Workspace)/Nugets/Microsoft.OpenApi.ApiManifest.*nupkg
                         addChangeLog: false
+                        assetUploadMode: replace
