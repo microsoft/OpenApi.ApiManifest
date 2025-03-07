@@ -152,13 +152,13 @@ internal static class ParsingHelpers
 
     internal static async Task<ReadResult> ParseOpenApiAsync(Stream stream, Uri openApiFileUri, bool inlineExternal, CancellationToken cancellationToken)
     {
-        OpenApiReaderRegistry.RegisterReader(OpenApiConstants.Yaml, new OpenApiYamlReader());
-        OpenApiReaderRegistry.RegisterReader(OpenApiConstants.Yml, new OpenApiYamlReader());
-        ReadResult result = await OpenApiDocument.LoadAsync(stream, settings: new OpenApiReaderSettings
+        var settings = new OpenApiReaderSettings
         {
             LoadExternalRefs = inlineExternal,
             BaseUrl = openApiFileUri
-        }, cancellationToken: cancellationToken).ConfigureAwait(false);
+        };
+        settings.AddYamlReader();
+        ReadResult result = await OpenApiDocument.LoadAsync(stream, settings: settings, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return result;
     }
