@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-preview2](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview1...v2.0.0-preview2) (2025-03-07)
+
+
+### Bug Fixes
+
+* upgrades oai.net to preview 12 ([8d3b960](https://github.com/microsoft/OpenApi.ApiManifest/commit/8d3b9604e0a19a10449f9d74815a8231734a4e8e))
+* upgrades oai.net to preview 12 ([b283f44](https://github.com/microsoft/OpenApi.ApiManifest/commit/b283f445216c2005ed02f1ec8ab11b8c1d3141d7))
+
 ## [0.5.6] - 2024-03-06
 
 ### Changed
