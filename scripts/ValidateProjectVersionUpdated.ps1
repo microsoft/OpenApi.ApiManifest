@@ -28,10 +28,14 @@ Param(
 
 [xml]$xmlDoc = Get-Content $projectPath
 
-$PropertyGroup = $xmlDoc.Project.PropertyGroup | Where-Object -Property PackageId -eq "Microsoft.OpenApi.ApiManifest"
+$PropertyGroup = $xmlDoc.Project.PropertyGroup | Where-Object -Property Company -eq "Microsoft"
 $versionPrefixString = $PropertyGroup.VersionPrefix
 if ($PropertyGroup.VersionSuffix) {
     $versionPrefixString = $versionPrefixString + "-" + $PropertyGroup.VersionSuffix
+}
+
+if ($null -eq $versionPrefixString -or $versionPrefixString -eq "") {
+    $versionPrefixString = $PropertyGroup.Version
 }
 
 # System.Version, get the version prefix.
