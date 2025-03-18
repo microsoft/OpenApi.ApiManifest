@@ -205,16 +205,16 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
                 {
                     ["/users"] = new OpenApiPathItem
                     {
-                        Operations = new Dictionary<OperationType, OpenApiOperation>
+                        Operations = new Dictionary<HttpMethod, OpenApiOperation>
                         {
-                            [OperationType.Get] = new OpenApiOperation()
+                            [HttpMethod.Get] = new OpenApiOperation()
                         }
                     },
                     ["/groups"] = new OpenApiPathItem
                     {
-                        Operations = new Dictionary<OperationType, OpenApiOperation>
+                        Operations = new Dictionary<HttpMethod, OpenApiOperation>
                         {
-                            [OperationType.Get] = new OpenApiOperation()
+                            [HttpMethod.Get] = new OpenApiOperation()
                         }
                     }
                 }
