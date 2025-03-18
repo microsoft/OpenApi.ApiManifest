@@ -3,7 +3,6 @@
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Reader;
-using Microsoft.OpenApi.Readers;
 using System.Diagnostics;
 using System.Text.Json;
 

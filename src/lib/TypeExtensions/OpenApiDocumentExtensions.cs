@@ -43,7 +43,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             if (string.IsNullOrEmpty(publisherEmail))
                 publisherEmail = document.Info.Contact?.Email is string cEmail && !string.IsNullOrEmpty(cEmail) ? cEmail : DefaultPublisherEmail;
 
-            apiDependencyName = NormalizeApiName(string.IsNullOrEmpty(apiDependencyName) ? document.Info.Title : apiDependencyName!);
+            apiDependencyName = NormalizeApiName(string.IsNullOrEmpty(apiDependencyName) ? document.Info.Title ?? string.Empty : apiDependencyName!);
             string? apiDeploymentBaseUrl = GetApiDeploymentBaseUrl(document.Servers.FirstOrDefault());
 
             var apiManifest = new ApiManifestDocument(applicationName)
@@ -62,15 +62,18 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
 
             foreach (var path in document.Paths)
             {
-                foreach (var operation in path.Value.Operations)
+                if (path.Value.Operations is not null)
                 {
-                    var requestInfo = new RequestInfo
+                    foreach (var operation in path.Value.Operations)
                     {
-                        Method = operation.Key.ToString(),
-                        UriTemplate = apiDeploymentBaseUrl != default ? path.Key.TrimStart('/') : path.Key
-                    };
-                    apiManifest.ApiDependencies[apiDependencyName].Requests.Add(requestInfo);
-                }
+                        var requestInfo = new RequestInfo
+                        {
+                            Method = operation.Key.ToString(),
+                            UriTemplate = apiDeploymentBaseUrl != default ? path.Key.TrimStart('/') : path.Key
+                        };
+                        apiManifest.ApiDependencies[apiDependencyName].Requests.Add(requestInfo);
+                    }
+                }                
             }
             return apiManifest;
         }
@@ -83,7 +86,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
 
         private static string? GetApiDeploymentBaseUrl(OpenApiServer? server)
         {
-            if (server is null)
+            if (server is null || string.IsNullOrEmpty(server.Url) || server.Url is null)
                 return null;
 
             // Ensure the base URL ends with a slash.
