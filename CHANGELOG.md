@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-preview4](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview3...v2.0.0-preview4) (2025-04-17)
+
+
+### Features
+
+* upgrades oai.net to preview17 ([4c64ca9](https://github.com/microsoft/OpenApi.ApiManifest/commit/4c64ca9f7384d027831431950e35738369dd7c62))
+* upgrades oai.net to preview17 ([97d96b4](https://github.com/microsoft/OpenApi.ApiManifest/commit/97d96b4a00948ddef538f9655e5a00bd99311309))
+
 ## [2.0.0-preview3](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview2...v2.0.0-preview3) (2025-03-18)
 
 
