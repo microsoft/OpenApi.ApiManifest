@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0-preview5](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview4...v2.0.0-preview5) (2025-06-03)
+
+
+### Bug Fixes
+
+* update namespace reference following OAI.net updates ([3219727](https://github.com/microsoft/OpenApi.ApiManifest/commit/321972705930a7d06e155c64b857d055cf55795c))
+
 ## [2.0.0-preview4](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview3...v2.0.0-preview4) (2025-04-17)
 
 
