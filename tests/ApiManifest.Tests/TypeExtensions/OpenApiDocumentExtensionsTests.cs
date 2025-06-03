@@ -1,5 +1,5 @@
 ﻿using Microsoft.OpenApi.ApiManifest.TypeExtensions;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
 {

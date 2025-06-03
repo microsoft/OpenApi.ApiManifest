@@ -2,7 +2,7 @@
 using Microsoft.OpenApi.ApiManifest.Helpers;
 using Microsoft.OpenApi.ApiManifest.OpenAI;
 using Microsoft.OpenApi.ApiManifest.OpenAI.Authentication;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Globalization;
 
 namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
@@ -35,7 +35,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
                 var result = await ParsingHelpers.ParseOpenApiAsync(new Uri(apiDependency!.ApiDescriptionUrl), false, cancellationToken).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(openApiPath))
                     openApiPath = apiDependency.ApiDescriptionUrl;
-                return apiManifestDocument.ToOpenAIPluginManifest(result.Document 
+                return apiManifestDocument.ToOpenAIPluginManifest(result.Document
                     ?? throw new ApiManifestException(ErrorMessage.OpenApiDocumentIsNull), logoUrl, legalInfoUrl, openApiPath!);
             }
         }
@@ -57,8 +57,8 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             apiManifestDocument.Validate();
             string contactEmail = apiManifestDocument.Publisher?.ContactEmail!;
 
-            string title = string.IsNullOrEmpty(openApiDocument.Info.Title) || openApiDocument.Info.Title is null 
-                ? "Default Title": openApiDocument.Info.Title;
+            string title = string.IsNullOrEmpty(openApiDocument.Info.Title) || openApiDocument.Info.Title is null
+                ? "Default Title" : openApiDocument.Info.Title;
             var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(title, title, logoUrl, contactEmail, legalInfoUrl);
             openApiManifest.Api = new Api("openapi", openApiPath);
             openApiManifest.Auth = new ManifestNoAuth();
