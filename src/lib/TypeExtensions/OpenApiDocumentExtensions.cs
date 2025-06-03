@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.Helpers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
@@ -73,7 +73,7 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
                         };
                         apiManifest.ApiDependencies[apiDependencyName].Requests.Add(requestInfo);
                     }
-                }                
+                }
             }
             return apiManifest;
         }
