@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0-preview6](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview5...v2.0.0-preview6) (2025-06-10)
+
+
+### Features
+
+* upgrades openapi.net.odata to the latest version ([f5aa2c1](https://github.com/microsoft/OpenApi.ApiManifest/commit/f5aa2c12a61c7054912efa71ce5fe61314b65843))
+* upgrades openapi.net.odata to the latest version ([2835d30](https://github.com/microsoft/OpenApi.ApiManifest/commit/2835d301b4128f7b5182b5e88812f7cad1c89a72))
+
 ## [2.0.0-preview5](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview4...v2.0.0-preview5) (2025-06-03)
 
 
