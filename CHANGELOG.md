@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0-preview.1](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview6...v3.0.0-preview.1) (2025-11-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* adds support for OpenAPI 3.2.0
+
+### Features
+
+* adds support for OpenAPI 3.2.0 ([f0a04f4](https://github.com/microsoft/OpenApi.ApiManifest/commit/f0a04f4adea1b4903816f2c92dbfe2d70c3e08e4))
+
 ## [2.0.0-preview6](https://github.com/microsoft/OpenApi.ApiManifest/compare/v2.0.0-preview5...v2.0.0-preview6) (2025-06-10)
 
 
