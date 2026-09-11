@@ -7,17 +7,26 @@ public class ApiManifestDocument
 {
     public Publisher? Publisher { get; set; }
     public string? ApplicationName { get; set; }
+    public string? Description { get; set; }
     public ApiDependencies ApiDependencies { get; set; } = new ApiDependencies();
     public Extensions Extensions { get; set; } = new Extensions();
 
     private const string PublisherProperty = "publisher";
     private const string ApplicationNameProperty = "applicationName";
+    private const string DescriptionProperty = "description";
     private const string ApiDependenciesProperty = "apiDependencies";
     private const string ExtensionsProperty = "extensions";
 
     public ApiManifestDocument(string applicationName)
     {
         ApplicationName = applicationName;
+        Validate();
+    }
+
+    public ApiManifestDocument(string applicationName, string description)
+    {
+        ApplicationName = applicationName;
+        Description = description;
         Validate();
     }
 
@@ -34,6 +43,10 @@ public class ApiManifestDocument
         Validate();
         writer.WriteStartObject();
         writer.WriteString(ApplicationNameProperty, ApplicationName);
+        if (Description != null)
+        {
+            writer.WriteString(DescriptionProperty, Description);
+        }
         if (Publisher != null)
         {
             writer.WritePropertyName(PublisherProperty);
@@ -74,6 +87,7 @@ public class ApiManifestDocument
     private static readonly FixedFieldMap<ApiManifestDocument> handlers = new()
     {
         { ApplicationNameProperty, (o,v) => {o.ApplicationName = v.GetString(); } },
+        { DescriptionProperty, (o,v) => {o.Description = v.GetString(); } },
         { PublisherProperty, (o,v) => {o.Publisher = Publisher.Load(v);  } },
         { ApiDependenciesProperty, (o,v) => {o.ApiDependencies = new ApiDependencies(ParsingHelpers.GetMap(v, ApiDependency.Load));  } },
         { ExtensionsProperty, (o,v) => {o.Extensions = Extensions.Load(v);  } }
