@@ -1,5 +1,6 @@
 {
   "applicationName": "My Application",
+  "description":  "My Description",
   "publisher": {
     "name": "Alice",
     "contactEmail": "alice@example.org"
