@@ -16,6 +16,19 @@ public class CreateTests
         Assert.Null(apiManifest.Publisher);
         Assert.Empty(apiManifest.ApiDependencies);
         Assert.Empty(apiManifest.Extensions);
+        Assert.Null(apiManifest.Description);
+    }
+
+    [Fact]
+    public void CreateApiManifestDocumentWithDescription()
+    {
+        var apiManifest = new ApiManifestDocument("application-name", "description");
+        Assert.NotNull(apiManifest);
+        Assert.Equal("application-name", apiManifest.ApplicationName);
+        Assert.Equal("description", apiManifest.Description);
+        Assert.Null(apiManifest.Publisher);
+        Assert.Empty(apiManifest.ApiDependencies);
+        Assert.Empty(apiManifest.Extensions);
     }
 
     [Theory]
