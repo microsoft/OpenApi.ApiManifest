@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.ApiManifest.Helpers;
+using Microsoft.OpenApi.ApiManifest.Helpers;
 using System.Text.Json;
 
 namespace Microsoft.OpenApi.ApiManifest;
@@ -18,6 +18,11 @@ public class ApiManifestDocument
     public ApiManifestDocument(string applicationName)
     {
         ApplicationName = applicationName;
+        Validate();
+    }
+
+    public ApiManifestDocument()
+    {
         Validate();
     }
 
