@@ -69,6 +69,52 @@ public class BasicTests
     }
 
     [Fact]
+    public void SerializesExtensionsWithNullValue()
+    {
+        var document = new ApiManifestDocument("test-app");
+        document.Extensions.Add("custom-null-extension", null);
+
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
+        document.Write(writer);
+        writer.Flush();
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream);
+        var json = reader.ReadToEnd();
+        using var jsonDoc = JsonDocument.Parse(json);
+
+        Assert.True(jsonDoc.RootElement.GetProperty("extensions").TryGetProperty("custom-null-extension", out var extElement));
+        Assert.Equal(JsonValueKind.Null, extElement.ValueKind);
+    }
+
+    [Fact]
+    public void DeserializesDependencyWithNullApiDeploymentBaseUrl()
+    {
+        var serializedValue = """
+        {
+            "applicationName": "test-app",
+            "apiDependencies": {
+                "example": {
+                    "apiDescriptionUrl": "https://example.org",
+                    "apiDeploymentBaseUrl": null,
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/test"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
+        var doc = JsonDocument.Parse(serializedValue);
+        var manifest = ApiManifestDocument.Load(doc.RootElement);
+        Assert.NotNull(manifest);
+        Assert.Null(manifest.ApiDependencies["example"].ApiDeploymentBaseUrl);
+    }
+
+    [Fact]
     public void AcceptsMultipleDependenciesWithDifferentCasing()
     {
         var document = new ApiManifestDocument("foo");

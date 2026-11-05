@@ -62,6 +62,16 @@ public class CreateTests
         );
     }
 
+    [Fact]
+    public void CreateApiDependencyWithNullApiDeploymentBaseUrl()
+    {
+        var apiDependency = new ApiDependency
+        {
+            ApiDeploymentBaseUrl = null
+        };
+        Assert.Null(apiDependency.ApiDeploymentBaseUrl);
+    }
+
     // Create test to instantiate ApiManifest with auth
     [Fact]
     public void CreateApiManifestWithAuthorizationRequirements()

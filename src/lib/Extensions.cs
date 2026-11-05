@@ -34,6 +34,8 @@ public class Extensions : Dictionary<string, JsonNode?>
             writer.WritePropertyName(extension.Key);
             if (extension.Value is not null)
                 writer.WriteRawValue(extension.Value.ToJsonString());
+            else
+                writer.WriteNullValue();
         }
         writer.WriteEndObject();
     }
