@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.Helpers;
@@ -89,8 +89,9 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             if (server is null || string.IsNullOrEmpty(server.Url) || server.Url is null)
                 return null;
 
-            // Ensure the base URL ends with a slash.
-            return !server.Url.EndsWith("/", StringComparison.Ordinal) ? $"{server.Url}/" : server.Url;
+            // Ensure the base URL ends with a slash and is a valid absolute URI.
+            var normalizedUrl = !server.Url.EndsWith("/", StringComparison.Ordinal) ? $"{server.Url}/" : server.Url;
+            return Uri.TryCreate(normalizedUrl, UriKind.Absolute, out _) ? normalizedUrl : null;
         }
     }
 }
