@@ -68,6 +68,23 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
         }
 
         [Fact]
+        public void ToApiManifestWithoutApplicationNameReturnsApiManifestDocument()
+        {
+            // Arrange
+            var apiDescriptionUrl = "https://example.com/api-description.yaml";
+
+            // Act
+            var apiManifest = exampleDocument.ToApiManifest(apiDescriptionUrl);
+
+            // Assert
+            Assert.NotNull(apiManifest);
+            Assert.Null(apiManifest.ApplicationName);
+            Assert.NotNull(apiManifest.Publisher);
+            Assert.NotNull(apiManifest.ApiDependencies);
+            _ = Assert.Single(apiManifest.ApiDependencies);
+        }
+
+        [Fact]
         public void ToApiManifestWithValidDocumentAndApiDependencyNameReturnsApiManifestDocument()
         {
             // Arrange
