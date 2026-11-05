@@ -69,6 +69,32 @@ public class BasicTests
     }
 
     [Fact]
+    public void DeserializesDependencyWithNullApiDeploymentBaseUrl()
+    {
+        var serializedValue = """
+        {
+            "applicationName": "test-app",
+            "apiDependencies": {
+                "example": {
+                    "apiDescriptionUrl": "https://example.org",
+                    "apiDeploymentBaseUrl": null,
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/test"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
+        var doc = JsonDocument.Parse(serializedValue);
+        var manifest = ApiManifestDocument.Load(doc.RootElement);
+        Assert.NotNull(manifest);
+        Assert.Null(manifest.ApiDependencies["example"].ApiDeploymentBaseUrl);
+    }
+
+    [Fact]
     public void AcceptsMultipleDependenciesWithDifferentCasing()
     {
         var document = new ApiManifestDocument("foo");
