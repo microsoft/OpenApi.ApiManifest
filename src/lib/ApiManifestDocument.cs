@@ -38,7 +38,10 @@ public class ApiManifestDocument
         ValidationHelpers.ThrowIfNull(writer, nameof(writer));
         Validate();
         writer.WriteStartObject();
-        writer.WriteString(ApplicationNameProperty, ApplicationName);
+        if (!string.IsNullOrWhiteSpace(ApplicationName))
+        {
+            writer.WriteString(ApplicationNameProperty, ApplicationName);
+        }
         if (Publisher != null)
         {
             writer.WritePropertyName(PublisherProperty);
@@ -71,7 +74,8 @@ public class ApiManifestDocument
 
     internal void Validate()
     {
-        ValidationHelpers.ValidateNullOrWhitespace(nameof(ApplicationName), ApplicationName, nameof(ApiManifestDocument));
+        if (ApplicationName != null && string.IsNullOrWhiteSpace(ApplicationName))
+            throw new ArgumentException(string.Format(System.Globalization.CultureInfo.InvariantCulture, ErrorMessage.FieldIsNotValid, nameof(ApplicationName)), nameof(ApplicationName));
         Publisher?.Validate();
     }
 
