@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
 using System.Text.Json.Nodes;
@@ -16,6 +16,25 @@ public class CreateTests
         Assert.Null(apiManifest.Publisher);
         Assert.Empty(apiManifest.ApiDependencies);
         Assert.Empty(apiManifest.Extensions);
+    }
+
+    [Fact]
+    public void CreateApiManifestDocumentWithoutApplicationName()
+    {
+        var apiManifest = new ApiManifestDocument();
+        Assert.NotNull(apiManifest);
+        Assert.Null(apiManifest.ApplicationName);
+        Assert.Null(apiManifest.Publisher);
+        Assert.Empty(apiManifest.ApiDependencies);
+        Assert.Empty(apiManifest.Extensions);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void CreateApiManifestDocumentWithWhitespaceApplicationNameThrows(string applicationName)
+    {
+        _ = Assert.Throws<ArgumentException>(() => new ApiManifestDocument(applicationName));
     }
 
     [Theory]

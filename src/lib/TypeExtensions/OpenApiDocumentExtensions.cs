@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
 using Microsoft.OpenApi.ApiManifest.Helpers;
@@ -31,11 +31,12 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// If the contact email is also not available, it defaults to 'publisher-email@example.com'.
         /// </param>
         /// <returns>An <see cref="ApiManifestDocument"/>.</returns>
-        public static ApiManifestDocument ToApiManifest(this OpenApiDocument document, string? apiDescriptionUrl, string applicationName, string? apiDependencyName = default, string? publisherName = default, string? publisherEmail = default)
+        public static ApiManifestDocument ToApiManifest(this OpenApiDocument document, string? apiDescriptionUrl, string? applicationName = default, string? apiDependencyName = default, string? publisherName = default, string? publisherEmail = default)
         {
             ValidationHelpers.ThrowIfNull(document, nameof(document));
             ValidationHelpers.ValidateNullOrWhitespace(nameof(apiDescriptionUrl), apiDescriptionUrl, nameof(ApiManifestDocument));
-            ValidationHelpers.ValidateNullOrWhitespace(nameof(applicationName), applicationName, nameof(ApiManifestDocument));
+            if (applicationName != null && string.IsNullOrWhiteSpace(applicationName))
+                throw new ArgumentException(string.Format(System.Globalization.CultureInfo.InvariantCulture, ErrorMessage.FieldIsNotValid, nameof(applicationName)), nameof(applicationName));
 
             if (string.IsNullOrEmpty(publisherName))
                 publisherName = document.Info.Contact?.Name is string cName && !string.IsNullOrEmpty(cName) ? cName : DefaultPublisherName;
@@ -46,8 +47,9 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             apiDependencyName = NormalizeApiName(string.IsNullOrEmpty(apiDependencyName) ? document.Info.Title ?? string.Empty : apiDependencyName!);
             string? apiDeploymentBaseUrl = GetApiDeploymentBaseUrl(document.Servers.FirstOrDefault());
 
-            var apiManifest = new ApiManifestDocument(applicationName)
+            var apiManifest = new ApiManifestDocument
             {
+                ApplicationName = applicationName,
                 Publisher = new(publisherName!, publisherEmail!),
                 ApiDependencies = new() {
                     {

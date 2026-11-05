@@ -137,12 +137,79 @@ public class BasicTests
     }
 
     [Fact]
-    public void FailToParseDocumentWithoutApplicationName()
+    public void ParseDocumentWithoutApplicationName()
     {
-        _ = Assert.Throws<ArgumentNullException>(() =>
+        var serializedValue = """
+        {
+            "apiDependencies": {
+                "graph": {
+                    "apiDescriptionUrl": "https://example.org",
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/directoryObjects/{directoryObject-id}"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
+        var doc = JsonDocument.Parse(serializedValue);
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+        Assert.NotNull(apiManifest);
+        Assert.Null(apiManifest.ApplicationName);
+        _ = Assert.Single(apiManifest.ApiDependencies);
+    }
+
+    [Fact]
+    public void SerializeAndDeserializeDocumentWithoutApplicationName()
+    {
+        var document = new ApiManifestDocument
+        {
+            Publisher = new("Contoso", "contact@contoso.com"),
+            ApiDependencies = new()
+            {
+                {
+                    "graph", new()
+                    {
+                        ApiDescriptionUrl = "https://example.org",
+                        Requests = [
+                            new() {
+                                Method = "GET",
+                                UriTemplate = "/me"
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
+        document.Write(writer);
+        writer.Flush();
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream);
+        var json = reader.ReadToEnd();
+        using var jsonDoc = JsonDocument.Parse(json);
+
+        Assert.False(jsonDoc.RootElement.TryGetProperty("applicationName", out _));
+
+        var roundTripped = ApiManifestDocument.Load(jsonDoc.RootElement);
+        Assert.Null(roundTripped.ApplicationName);
+        Assert.Equal("Contoso", roundTripped.Publisher?.Name);
+        _ = Assert.Single(roundTripped.ApiDependencies);
+    }
+
+    [Fact]
+    public void FailToParseDocumentWithWhitespaceApplicationName()
+    {
+        _ = Assert.Throws<ArgumentException>(() =>
         {
             var serializedValue = """
             {
+                "applicationName": "   ",
                 "apiDependencies": {
                     "graph": {
                         "apiDescriptionUrl": "https://example.org",
@@ -158,8 +225,7 @@ public class BasicTests
             """;
             var doc = JsonDocument.Parse(serializedValue);
             _ = ApiManifestDocument.Load(doc.RootElement);
-        }
-        );
+        });
     }
 
     [Fact]
