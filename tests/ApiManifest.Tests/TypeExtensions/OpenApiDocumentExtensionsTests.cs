@@ -67,6 +67,38 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.TypeExtensions
             Assert.Equal(exampleDocument.Paths.Count, apiManifest.ApiDependencies.First().Value.Requests.Count);
         }
 
+        [Theory]
+        [InlineData("/v1")]
+        [InlineData("/api/")]
+        [InlineData("https://{subdomain}.example.com/")]
+        public void ToApiManifestWithRelativeOrTemplatedServerUrlOmitsApiDeploymentBaseUrl(string serverUrl)
+        {
+            // Arrange
+            var openApiDoc = new OpenApiDocument
+            {
+                Info = new OpenApiInfo { Title = "Test API", Version = "1.0" },
+                Servers = [new OpenApiServer { Url = serverUrl }],
+                Paths = new OpenApiPaths
+                {
+                    ["/users"] = new OpenApiPathItem
+                    {
+                        Operations = new Dictionary<HttpMethod, OpenApiOperation>
+                        {
+                            [HttpMethod.Get] = new OpenApiOperation()
+                        }
+                    }
+                }
+            };
+
+            // Act
+            var manifest = openApiDoc.ToApiManifest("https://example.com/openapi.json", "test-app");
+
+            // Assert
+            Assert.NotNull(manifest);
+            Assert.Null(manifest.ApiDependencies.First().Value.ApiDeploymentBaseUrl);
+            _ = Assert.Single(manifest.ApiDependencies.First().Value.Requests);
+        }
+
         [Fact]
         public void ToApiManifestWithValidDocumentAndApiDependencyNameReturnsApiManifestDocument()
         {
