@@ -13,7 +13,8 @@ public class ApiDependency
         get { return _apiDeploymentBaseUrl; }
         set
         {
-            ValidationHelpers.ValidateBaseUrl(nameof(ApiDeploymentBaseUrl), value);
+            if (value != null)
+                ValidationHelpers.ValidateBaseUrl(nameof(ApiDeploymentBaseUrl), value);
             _apiDeploymentBaseUrl = value;
         }
     }
