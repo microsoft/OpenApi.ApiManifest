@@ -55,14 +55,17 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
             ValidationHelpers.ThrowIfNull(openApiDocument, nameof(openApiDocument));
             // Validates the ApiManifestDocument before generating the OpenAI manifest. This includes the publisher object.
             apiManifestDocument.Validate();
-            string contactEmail = apiManifestDocument.Publisher?.ContactEmail!;
+            string? contactEmail = !string.IsNullOrWhiteSpace(apiManifestDocument.Publisher?.ContactEmail)
+                ? apiManifestDocument.Publisher!.ContactEmail
+                : openApiDocument.Info?.Contact?.Email;
 
-            string title = string.IsNullOrEmpty(openApiDocument.Info.Title) || openApiDocument.Info.Title is null
-                ? "Default Title" : openApiDocument.Info.Title;
-            var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(title, title, logoUrl, contactEmail, legalInfoUrl);
+            string title = openApiDocument.Info?.Title is string { Length: > 0 } t
+                ? t
+                : "Default Title";
+            var openApiManifest = OpenApiPluginFactory.CreateOpenAIPluginManifest(title, title, logoUrl, contactEmail!, legalInfoUrl);
             openApiManifest.Api = new Api("openapi", openApiPath);
             openApiManifest.Auth = new ManifestNoAuth();
-            openApiManifest.DescriptionForHuman = openApiDocument.Info.Description ?? $"Description for {openApiManifest.NameForHuman}.";
+            openApiManifest.DescriptionForHuman = openApiDocument.Info?.Description ?? $"Description for {openApiManifest.NameForHuman}.";
             openApiManifest.DescriptionForModel = openApiManifest.DescriptionForHuman;
 
             return openApiManifest;
@@ -75,8 +78,14 @@ namespace Microsoft.OpenApi.ApiManifest.TypeExtensions
         /// <param name="apiDependencyName">The name of apiDependency to use from the provided <see cref="ApiManifestDocument.ApiDependencies"/>. The method defaults to the first apiDependency in <see cref="ApiManifestDocument.ApiDependencies"/> if no value is provided.</param>
         /// <param name="apiDependency">The <see cref="ApiDependency"/> that was found.</param>
         /// <returns>Returns true if the apiDependency is found and not null, otherwise false.</returns>
-        private static bool TryGetApiDependency(ApiDependencies apiDependencies, string? apiDependencyName, out ApiDependency? apiDependency)
+        private static bool TryGetApiDependency(ApiDependencies? apiDependencies, string? apiDependencyName, out ApiDependency? apiDependency)
         {
+            if (apiDependencies == null)
+            {
+                apiDependency = null;
+                return false;
+            }
+
             if (string.IsNullOrEmpty(apiDependencyName))
                 apiDependency = apiDependencies.FirstOrDefault().Value;
             else
