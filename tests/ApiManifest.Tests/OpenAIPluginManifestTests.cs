@@ -547,6 +547,66 @@ public class OpenAIPluginManifestTests
             async () => await apiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml"));
     }
 
+    [Theory]
+    [InlineData("null", null)]
+    [InlineData("true", true)]
+    [InlineData("false", false)]
+    public void LoadApiWithIsUserAuthenticatedValues(string isUserAuthenticatedRaw, bool? expected)
+    {
+        var json = $$"""
+        {
+            "type": "openapi",
+            "url": "https://api.openai.com/v1",
+            "is_user_authenticated": {{isUserAuthenticatedRaw}}
+        }
+        """;
+        using var doc = JsonDocument.Parse(json);
+        var api = Api.Load(doc.RootElement);
+        Assert.Equal(expected, api.IsUserAuthenticated);
+    }
+
+    [Fact]
+    public void ToOpenAIPluginManifestWithNullInfoReturnsManifestWithDefaults()
+    {
+        var apiManifest = new ApiManifestDocument("test-app")
+        {
+            Publisher = new("Test Publisher", "publisher@example.com")
+        };
+        var openApiDoc = new OpenApiDocument
+        {
+            Info = null!
+        };
+
+        var manifest = apiManifest.ToOpenAIPluginManifest(openApiDoc, "https://example.com/logo.png", "https://example.com/legal", "https://example.com/openapi.json");
+        Assert.NotNull(manifest);
+        Assert.Equal("Default Title", manifest.NameForHuman);
+        Assert.Equal("Default Title", manifest.NameForModel);
+        Assert.Equal("Description for Default Title.", manifest.DescriptionForHuman);
+        Assert.Equal("publisher@example.com", manifest.ContactEmail);
+    }
+
+    [Fact]
+    public void ToOpenAIPluginManifestFallsBackToOpenApiContactEmailWhenPublisherHasNoEmail()
+    {
+        var apiManifest = new ApiManifestDocument("test-app");
+        var openApiDoc = new OpenApiDocument
+        {
+            Info = new OpenApiInfo
+            {
+                Title = "Test API",
+                Contact = new OpenApiContact
+                {
+                    Email = "contact@example.com"
+                }
+            }
+        };
+
+        var manifest = apiManifest.ToOpenAIPluginManifest(openApiDoc, "https://example.com/logo.png", "https://example.com/legal", "https://example.com/openapi.json");
+        Assert.NotNull(manifest);
+        Assert.Equal("Test API", manifest.NameForHuman);
+        Assert.Equal("contact@example.com", manifest.ContactEmail);
+    }
+
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
         var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest("TestOAuthModel", "TestOAuth", "https://avatars.githubusercontent.com/bar", "joe@test.com", "https://legalinfo.foobar.com");

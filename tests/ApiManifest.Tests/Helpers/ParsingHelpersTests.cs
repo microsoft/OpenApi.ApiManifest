@@ -140,5 +140,102 @@ namespace Microsoft.OpenApi.ApiManifest.Tests.Helpers
             var openApiUri = new Uri("xyx://contoso.com/openapi.yaml");
             await Assert.ThrowsAsync<ArgumentException>(async () => await ParsingHelpers.ParseOpenApiAsync(openApiUri, false, CancellationToken.None));
         }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("{}")]
+        public void GetListReturnsEmptyWhenElementIsNotArray(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var list = ParsingHelpers.GetList(doc.RootElement, v => v.GetString()!);
+            Assert.Empty(list);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("[]")]
+        public void GetMapReturnsEmptyWhenElementIsNotObject(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var map = ParsingHelpers.GetMap(doc.RootElement, v => v.GetString()!);
+            Assert.Empty(map);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("[]")]
+        public void GetOrderedMapReturnsEmptyWhenElementIsNotObject(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var map = ParsingHelpers.GetOrderedMap(doc.RootElement, v => v.GetString()!);
+            Assert.Empty(map);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("[]")]
+        public void GetMapOfStringReturnsEmptyWhenElementIsNotObject(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var map = ParsingHelpers.GetMapOfString(doc.RootElement);
+            Assert.Empty(map);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("{}")]
+        public void GetListOfStringReturnsEmptyWhenElementIsNotArray(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var list = ParsingHelpers.GetListOfString(doc.RootElement);
+            Assert.Empty(list);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("{}")]
+        public void GetHashSetOfStringReturnsEmptyWhenElementIsNotArray(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var set = ParsingHelpers.GetHashSetOfString(doc.RootElement);
+            Assert.Empty(set);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("{}")]
+        public void GetOrderedHashSetOfStringReturnsEmptyWhenElementIsNotArray(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var set = ParsingHelpers.GetOrderedHashSetOfString(doc.RootElement);
+            Assert.Empty(set);
+        }
+
+        [Theory]
+        [InlineData("null")]
+        [InlineData("\"string\"")]
+        [InlineData("123")]
+        [InlineData("[]")]
+        public void ParseMapDoesNotThrowWhenElementIsNotObject(string rawJson)
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            var dummy = new object();
+            var handlers = new FixedFieldMap<object>();
+            ParsingHelpers.ParseMap(doc.RootElement, dummy, handlers);
+        }
     }
 }
