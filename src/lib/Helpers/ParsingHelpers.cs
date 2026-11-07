@@ -16,6 +16,9 @@ internal static class ParsingHelpers
 
     internal static void ParseMap<T>(JsonElement node, T permissionsDocument, FixedFieldMap<T> handlers)
     {
+        if (node.ValueKind != JsonValueKind.Object)
+            return;
+
         foreach (var element in node.EnumerateObject())
         {
             if (handlers.TryGetValue(element.Name, out var handler))
@@ -33,6 +36,9 @@ internal static class ParsingHelpers
     internal static List<T> GetList<T>(JsonElement v, Func<JsonElement, T> load)
     {
         var list = new List<T>();
+        if (v.ValueKind != JsonValueKind.Array)
+            return list;
+
         foreach (var item in v.EnumerateArray())
         {
             list.Add(load(item));
@@ -43,6 +49,9 @@ internal static class ParsingHelpers
     internal static Dictionary<string, T> GetMap<T>(JsonElement v, Func<JsonElement, T> load)
     {
         var map = new Dictionary<string, T>();
+        if (v.ValueKind != JsonValueKind.Object)
+            return map;
+
         foreach (var item in v.EnumerateObject())
         {
             map.Add(item.Name, load(item.Value));
@@ -53,6 +62,9 @@ internal static class ParsingHelpers
     internal static SortedDictionary<string, T> GetOrderedMap<T>(JsonElement v, Func<JsonElement, T> load)
     {
         var map = new SortedDictionary<string, T>();
+        if (v.ValueKind != JsonValueKind.Object)
+            return map;
+
         foreach (var item in v.EnumerateObject())
         {
             map.Add(item.Name, load(item.Value));
@@ -63,6 +75,9 @@ internal static class ParsingHelpers
     internal static Dictionary<string, string> GetMapOfString(JsonElement v)
     {
         var map = new Dictionary<string, string>();
+        if (v.ValueKind != JsonValueKind.Object)
+            return map;
+
         foreach (var item in v.EnumerateObject())
         {
             var value = item.Value.GetString();
@@ -74,6 +89,9 @@ internal static class ParsingHelpers
     internal static List<string> GetListOfString(JsonElement v)
     {
         var list = new List<string>();
+        if (v.ValueKind != JsonValueKind.Array)
+            return list;
+
         foreach (var item in v.EnumerateArray())
         {
             var value = item.GetString();
@@ -86,6 +104,9 @@ internal static class ParsingHelpers
     internal static HashSet<string> GetHashSetOfString(JsonElement v)
     {
         var hashSet = new HashSet<string>();
+        if (v.ValueKind != JsonValueKind.Array)
+            return hashSet;
+
         foreach (var item in v.EnumerateArray())
         {
             var value = item.GetString();
@@ -98,6 +119,9 @@ internal static class ParsingHelpers
     internal static SortedSet<string> GetOrderedHashSetOfString(JsonElement v)
     {
         var sortedSet = new SortedSet<string>();
+        if (v.ValueKind != JsonValueKind.Array)
+            return sortedSet;
+
         foreach (var item in v.EnumerateArray())
         {
             var value = item.GetString();
