@@ -31,9 +31,7 @@ public class Api
 
     public static Api Load(JsonElement value)
     {
-        var api = new Api(value);
-        ParsingHelpers.ParseMap(value, api, handlers);
-        return api;
+        return new Api(value);
     }
 
     // Create handlers FixedFieldMap for Api
@@ -41,7 +39,12 @@ public class Api
     {
         { TypeProperty, (o,v) => {o.Type = v.GetString();  } },
         { UrlProperty, (o,v) => {o.Url = v.GetString();  } },
-        { IsUserAuthenticatedProperty, (o,v) => {o.IsUserAuthenticated = v.GetBoolean(); }},
+        { IsUserAuthenticatedProperty, (o,v) => {
+            if (v.ValueKind is JsonValueKind.True or JsonValueKind.False)
+                o.IsUserAuthenticated = v.GetBoolean();
+            else if (v.ValueKind == JsonValueKind.Null)
+                o.IsUserAuthenticated = null;
+        }},
     };
 
     public void Write(Utf8JsonWriter writer)

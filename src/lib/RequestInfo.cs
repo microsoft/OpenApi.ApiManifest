@@ -33,7 +33,7 @@ public class RequestInfo
         { MethodProperty, (o,v) => {o.Method = v.GetString();  } },
         { UriTemplateProperty, (o,v) => {o.UriTemplate = v.GetString();  } },
         { DataClassificationProperty, (o,v) => {o.DataClassification = v.GetString();  } },
-        { ExcludeProperty, (o,v) => {o.Exclude = v.GetBoolean();  } },
+        { ExcludeProperty, (o,v) => { if (v.ValueKind is JsonValueKind.True or JsonValueKind.False) o.Exclude = v.GetBoolean(); } },
     };
 
     // Load Method
