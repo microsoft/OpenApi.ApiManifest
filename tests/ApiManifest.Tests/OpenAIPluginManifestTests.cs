@@ -547,6 +547,24 @@ public class OpenAIPluginManifestTests
             async () => await apiManifest.ToOpenAIPluginManifestAsync("https://avatars.githubusercontent.com/bar", "https://legalinfo.foobar.com", "MicrosoftGraph", "./openapi.yml"));
     }
 
+    [Theory]
+    [InlineData("null", null)]
+    [InlineData("true", true)]
+    [InlineData("false", false)]
+    public void LoadApiWithIsUserAuthenticatedValues(string isUserAuthenticatedRaw, bool? expected)
+    {
+        var json = $$"""
+        {
+            "type": "openapi",
+            "url": "https://api.openai.com/v1",
+            "is_user_authenticated": {{isUserAuthenticatedRaw}}
+        }
+        """;
+        using var doc = JsonDocument.Parse(json);
+        var api = Api.Load(doc.RootElement);
+        Assert.Equal(expected, api.IsUserAuthenticated);
+    }
+
     private static OpenAIPluginManifest CreateManifestPlugIn()
     {
         var manifest = OpenApiPluginFactory.CreateOpenAIPluginManifest("TestOAuthModel", "TestOAuth", "https://avatars.githubusercontent.com/bar", "joe@test.com", "https://legalinfo.foobar.com");

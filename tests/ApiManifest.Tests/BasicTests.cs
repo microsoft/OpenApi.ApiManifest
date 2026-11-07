@@ -318,6 +318,37 @@ public class BasicTests
         Assert.Equal("https://example.org/", apiManifest.ApiDependencies["graph"].ApiDeploymentBaseUrl);
     }
 
+    [Fact]
+    public void DeserializesRequestInfoWithNullOrMissingExclude()
+    {
+        var serializedValue = """
+        {
+            "applicationName": "test-app",
+            "apiDependencies": {
+                "graph": {
+                    "requests": [
+                        {
+                            "method": "GET",
+                            "uriTemplate": "/users",
+                            "exclude": null
+                        },
+                        {
+                            "method": "POST",
+                            "uriTemplate": "/users"
+                        }
+                    ]
+                }
+            }
+        }
+        """;
+        using var doc = JsonDocument.Parse(serializedValue);
+        var apiManifest = ApiManifestDocument.Load(doc.RootElement);
+        var requests = apiManifest.ApiDependencies["graph"].Requests;
+        Assert.Equal(2, requests.Count);
+        Assert.False(requests[0].Exclude);
+        Assert.False(requests[1].Exclude);
+    }
+
     private static ApiManifestDocument CreateDocument()
     {
         return new ApiManifestDocument("application-name")
